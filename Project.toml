@@ -1,0 +1,7 @@
+name = "EchelleCCFs"
+uuid = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
+authors = ["Eric Ford"]
+version = "0.0.1"
+
+[compat]
+julia = "1.5"
