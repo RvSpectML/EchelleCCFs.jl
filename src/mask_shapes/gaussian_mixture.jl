@@ -28,7 +28,7 @@ struct GaussianMixtureMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
         @assert 1 <= n <= 10   # Arbitrary upper limit
         @assert length(σ) == n
         @assert length(v_offset) == n
-        @assert all(0 .<= weight .<= one(eltype(weight)))   # 
+        @assert all(0 .<= weight .<= one(eltype(weight)))   #
         @assert all(0 .< σ .<= 300000)   # 300km/s is arbitrary choice for an upper limit
         @assert all(-1000 .<= v_offset .<= 1000)   # 1km/s is arbitrary choice for an upper limit
         @assert 0 < truncation_Δv <= 300000
@@ -49,7 +49,7 @@ end
 For now just makes a single Gaussian, so for testing purposes only.
 """
 function GaussianMixtureCCFMask(inst::AbstractInstrument; σ_scale_factor::Real = 1, truncation_Δv::Real = default_gaussian_mixture_ccf_truncation_Δv )
-    σ = σ_scale_factor * RvSpectML.default_ccf_mask_v_width(inst)
+    σ = σ_scale_factor * default_ccf_mask_v_width(inst)
     GaussianMixtureCCFMask([1.0], [σ],truncation_Δv,v_offset=[0.])
 end
 

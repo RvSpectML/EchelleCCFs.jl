@@ -4,11 +4,11 @@
 *.jl.mem
 /profiling
 
-/Manifest.toml
-/docs/Manifest.toml
-/examples/Manifest.toml
-/notebooks/Manifest.toml
-/test/Manifest.toml
+Manifest.toml
+docs/Manifest.toml
+examples/Manifest.toml
+notebooks/Manifest.toml
+test/Manifest.toml
 
 # Large files to be downloaded outside of git
 /data/large

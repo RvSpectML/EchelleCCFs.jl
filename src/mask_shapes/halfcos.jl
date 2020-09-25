@@ -22,7 +22,7 @@ end
 
 """ CosCCFMask( inst  ) """
 function CosCCFMask(inst::AbstractInstrument; scale_factor::Real = 1)
-    w = scale_factor * RvSpectML.default_ccf_mask_v_width(inst)
+    w = scale_factor * default_ccf_mask_v_width(inst)
     CosCCFMask(w/2)
 end
 

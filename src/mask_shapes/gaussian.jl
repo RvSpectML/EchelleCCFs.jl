@@ -32,11 +32,11 @@ function GaussianCCFMask(inst::AbstractInstrument; σ_scale_factor::Real = 1, tr
     #=
     default_σ = 5000
     σ_sqrt2 = scale_factor * default_σ * sqrt(2.0)
-    w = scale_factor * RvSpectML.default_ccf_mask_v_width(inst)
+    w = scale_factor * default_ccf_mask_v_width(inst)
     norm = 1.0/(σ_sqrt2*sqrt(π)*erf(w/σ_sqrt2))
     GaussianCCFMask(σ_sqrt2,w/2) # ,norm)
     =#
-    σ = σ_scale_factor * RvSpectML.default_ccf_mask_v_width(inst)
+    σ = σ_scale_factor * default_ccf_mask_v_width(inst)
     w = truncation_scale_factor
     GaussianCCFMask(σ,w/2)
 end

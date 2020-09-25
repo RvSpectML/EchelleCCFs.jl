@@ -13,6 +13,10 @@ default_supergaussian_ccf_exponent = 1.3
 default_supergaussian_ccf_truncation_scale_factor = 2
 default_gaussian_mixture_ccf_truncation_Δv = 20000.0
 
+# Can be specialized for specific instruments
+default_ccf_mask_v_width(inst::AbstractInstrument) = 1e3
+
+
 "A struct implementing a specific mask shapes should be a subtype of AbstractCCFMaskShape."
 abstract type AbstractCCFMaskShape  end
 export AbstractCCFMaskShape
