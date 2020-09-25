@@ -1,2 +1,5 @@
 [deps]
+EchelleCCFs = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
+Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
+RvSpectMLBase = "c48404b2-35ea-40e7-ac7f-06a53de703d6"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
