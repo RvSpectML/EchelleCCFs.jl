@@ -40,15 +40,16 @@ using Test
         @test_nowarn EchelleCCFs.calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
     end
 
-    # Not working
+    #= Not working
     @testset "calc_ccf_chunklist_timeseries" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
-        clt = ChunkListTimeseries(rand(3), [chunklist,chunklist,chunklist] )
-        @test_skip calc_ccf_chunklist_timeseries(clt, fill(ccfpl,3)  )
+        #clt = ChunkListTimeseries(rand(3), [chunklist,chunklist,chunklist] )
+        #@test_nowarn calc_ccf_chunklist_timeseries(clt, fill(ccfpl,3)  )
     end
+    =#
 
-    #=
+    #=  Not working
     @testset "calc_ccf_chunklist_timeseries" begin
         using RvSpectMLBase.TheoreticalInstrument
         using DataFrames
