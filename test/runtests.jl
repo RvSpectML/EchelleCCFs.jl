@@ -1,4 +1,5 @@
 using EchelleCCFs
+using RvSpectMLBase
 using Test
 
 @testset "EchelleCCFs.jl" begin

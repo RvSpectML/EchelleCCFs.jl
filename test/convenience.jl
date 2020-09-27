@@ -1,4 +1,5 @@
 using EchelleCCFs
+using RvSpectMLBase
 using Test
 
 
@@ -24,7 +25,6 @@ using Test
     flux .*= 1 .- d1.*exp.(-0.5.*((λs.-λ1)./λ1.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
 
     flux .*= 1 .- d2.*exp.(-0.5.*((λs.-λ2)./λ2.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
-    using RvSpectMLBase
     @testset "calc_ccf_chunk" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         @test_nowarn calc_ccf_chunk(chunk, ccfpl)
