@@ -27,7 +27,7 @@ struct GaussianCCFMask <: AbstractCCFMaskShape
 
 end
 
-""" GaussianCCFMask( inst ; scale_factor ) """
+""" `GaussianCCFMask( inst ; scale_factor )` """
 function GaussianCCFMask(inst::AbstractInstrument; σ_scale_factor::Real = 1, truncation_scale_factor::Real = default_gaussian_ccf_truncation_scale_factor )
     #=
     default_σ = 5000

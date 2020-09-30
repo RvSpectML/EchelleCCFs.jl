@@ -14,7 +14,7 @@ struct BasicLineList{T<:Real, AA<:AbstractArray{T,1} } <: AbstractLineList
     weight::AA
 end
 
-""" BasicLineList( λ, weight ) """
+""" `BasicLineList( λ, weight )` """
 function BasicLineList{T}(λ::AA, w::AA) where { T<:Real, AA<:AbstractArray{T,1} }
     @assert length(λ) == length(w)
     @assert length(λ) >= 1

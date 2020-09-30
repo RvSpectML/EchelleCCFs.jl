@@ -45,7 +45,7 @@ struct GaussianMixtureMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
 
 end
 
-""" GaussianMixtureCCFMask( inst ; scale_factor )
+""" `GaussianMixtureCCFMask( inst ; scale_factor )`
 For now just makes a single Gaussian, so for testing purposes only.
 """
 function GaussianMixtureCCFMask(inst::AbstractInstrument; σ_scale_factor::Real = 1, truncation_Δv::Real = default_gaussian_mixture_ccf_truncation_Δv )

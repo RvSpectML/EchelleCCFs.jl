@@ -2,15 +2,6 @@ using EchelleCCFs
 using Test
 
 
-import Polynomials
-function calc_vertex_of_quadatic_fit(x::AbstractVector{T1}, y::AbstractVector{T2}) where {T1<:Real, T2<:Real}
-    pfit = Polynomials.fit(x, y, 2)
-    @assert length(Polynomials.coeffs(pfit)) >= 3   # just in case fails to fit a quadratic
-    c, b, a = Polynomials.coeffs(pfit)
-    v_at_min_of_quadratic = -b/(2*a)
-    return v_at_min_of_quadratic
-end
-
 @testset "Check CCF accuracy" begin  # TODO repeat for multiple mask shapes
     @testset "Tophat mask" begin
         Δv = 1000
@@ -35,11 +26,13 @@ end
         flux .*= 1 .- d2.*exp.(-0.5.*((λs.-λ2)./λ2.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
         @test_nowarn ccf_1D(λs, flux, ccfpl)
         ccf = ccf_1D(λs, flux, ccfpl)
-        idx_min = findmin(ccf)[2]
-        idx_near_min = idx_min-3:idx_min+3
-        vfit = calc_vertex_of_quadatic_fit(v_grid[idx_near_min], ccf[idx_near_min])
-        #println("TopHatCCFMask:  vfit = ", vfit)
+
+        @test_nowarn  MeasureRvFromCCFGaussian()
+        mrfcg = MeasureRvFromCCFGaussian()
+        @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=mrfcg )
+        vfit = measure_rv_from_ccf(v_grid,ccf)
         @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+
     end
     @testset "Gaussian mask" begin
         Δv = 7e3
@@ -64,10 +57,18 @@ end
         flux .*= 1 .- d2.*exp.(-0.5.*((λs.-λ2)./λ2.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
         @test_nowarn ccf_1D(λs, flux, ccfpl)
         ccf = ccf_1D(λs, flux, ccfpl)
-        idx_min = findmin(ccf)[2]
-        idx_near_min = idx_min-3:idx_min+3
-        vfit = calc_vertex_of_quadatic_fit(v_grid[idx_near_min], ccf[idx_near_min])
-        #println("GaussianCCFMask:  vfit = ", vfit)
-        @test vfit ≈ 0  atol = 100   # TODO: tune tolerance better
+
+        @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromCCFQuadratic() )
+        vfit = measure_rv_from_ccf(v_grid,ccf)
+        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+
+        @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromMinCCF() )
+        vfit = measure_rv_from_ccf(v_grid,ccf)
+        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+
+        @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromCCFCentroid() )
+        vfit = measure_rv_from_ccf(v_grid,ccf)
+        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+
     end
 end

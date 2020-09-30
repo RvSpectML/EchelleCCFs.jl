@@ -19,7 +19,7 @@ struct SuperGaussianCCFMask <: AbstractCCFMaskShape
     half_width_truncation::Float64
     normalization::Float64
 
-    """ SuperGaussianCCFMask( σ ; half_truncation_width_in_σ=2 ) """
+    """ `SuperGaussianCCFMask( σ ; half_truncation_width_in_σ=2 )` """
     function SuperGaussianCCFMask(σ::Real, p::Real, w::Real=2 )
         @assert 0 < σ <= 300000   # 300km/s is arbitrary choice for an upper limit
         @assert 1 <= p <= 2
@@ -33,7 +33,7 @@ struct SuperGaussianCCFMask <: AbstractCCFMaskShape
     end
 end
 
-""" SuperGaussianCCFMask( inst ; scale_factor ) """
+""" `SuperGaussianCCFMask( inst ; scale_factor )` """
 function SuperGaussianCCFMask(inst::InstT; power::Real = default_supergaussian_ccf_exponent, fwhm::Real = default_supergaussian_ccf_fwhm,
         σ_scale_factor::Real = 1, truncation_scale_factor::Real = default_supergaussian_ccf_truncation_scale_factor ) where { InstT<:AbstractInstrument }
     # TODO: Update default values

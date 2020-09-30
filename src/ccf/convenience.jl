@@ -7,12 +7,12 @@ Created: August 2020
 using Statistics
 using ThreadedIterables
 
-"""  calc_ccf_chunk( chunk, ccf_plan )
+"""  `calc_ccf_chunk( chunk, ccf_plan )`
 Convenience function to compute CCF for one chunk of spectrum.
 # Inputs:
 - chunk
 # Optional Arguments:
-- ccf_plan (BasicCCFPlan())
+- `ccf_plan` (BasicCCFPlan())
 # Return:
 CCF for one chunk of spectrum, evaluated using mask_shape and line list from ccf plan
 """
@@ -30,7 +30,7 @@ function calc_ccf_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPl
   return ccf_out
 end
 
-"""  calc_ccf_chunklist ( chunklist, ccf_plans )
+"""  `calc_ccf_chunklist ( chunklist, ccf_plans )`
 Convenience function to compute CCF based on a spectrum's chunklist.
 # Inputs:
 - chunklist
@@ -50,7 +50,7 @@ function calc_ccf_chunklist(chunk_list::AbstractChunkList,
 end
 
 
-"""  calc_ccf_chunklist ( chunklist, var_list, ccf_plans )
+"""  `calc_ccf_chunklist ( chunklist, var_list, ccf_plans )`
 Convenience function to compute CCF based on a spectrum's chunklist.
 # Inputs:
 - chunklist
@@ -75,7 +75,7 @@ function calc_ccf_chunklist(chunk_list::AbstractChunkList, var_list::AbstractVec
                     assume_sorted=assume_sorted, use_pixel_vars=use_pixel_vars), +, 1:length(chunk_list.data) )
 end
 
-"""  calc_ccf_chunklist_timeseries( chunklist_timeseries, line_list )
+"""  `calc_ccf_chunklist_timeseries( chunklist_timeseries, line_list )`
 Convenience function to compute CCF for a timeseries of spectra, each with a chunklist.
 Uses multiple threads if avaliable.
 # Inputs:
@@ -144,7 +144,7 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
 end
 
 
-"""  calc_order_ccfs_chunklist ( chunklist_timeseries, line_list )
+"""  `calc_order_ccfs_chunklist ( chunklist_timeseries, line_list )`
 Convenience function to compute separate CCFs for each chunk (typically an order) in a spectrum.
 CCF is evaluated using line list and mask_shape provided by the ccf plan for each chunk.
 # Inputs:
@@ -161,7 +161,7 @@ function calc_order_ccfs_chunklist(chunk_list::AbstractChunkList,
     mapreduce(chid->calc_ccf_chunk(chunk_list.data[chid], plan_for_chunk[chid], assume_sorted=assume_sorted, use_pixel_vars=use_pixel_vars), hcat, 1:length(chunk_list.data) )
 end
 
-"""  calc_order_ccf_chunklist_timeseries( chunklist_timeseries, ccf_plan )
+"""  `calc_order_ccf_chunklist_timeseries( chunklist_timeseries, ccf_plan )`
 Convenience function to compute separate CCFs for each chunk (typically an order) of each spectrum in a timeseries.
     CCF is evaluated using line list and mask_shape provided by the ccf plan for each chunk.
 Uses multiple threads if avaliable.

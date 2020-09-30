@@ -10,7 +10,7 @@ function find_worst_telluric_in_each_chunk end
 
 
 """
-   make_clean_line_list_from_tellurics_expres(line_list, expres_data; Δv_to_avoid_tellurics )
+   `make_clean_line_list_from_tellurics_expres(line_list, expres_data; Δv_to_avoid_tellurics )`
 Returns a new line list that excludes lines with telluric contamination.
 Inputs:
 - line_list:  Dataframe containing field lambda

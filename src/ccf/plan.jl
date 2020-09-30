@@ -28,9 +28,9 @@ end
 
 """   BasicCCFPlan
 # Optional arguments:
-- midpoint: (default_v_center)
-- step: (default_v_step)
-- max: (default_v_max)
+- `midpoint`: (`default_v_center`)
+- `step`: (`default_v_step`)
+- `max`: (`default_v_max`)
 """
 function BasicCCFPlan(;midpoint::Real=default_v_center, step::Real=default_v_step, max::Real=default_v_max,
                        range_no_mask_change::Real=max, mask_shape::MST,
@@ -38,7 +38,7 @@ function BasicCCFPlan(;midpoint::Real=default_v_center, step::Real=default_v_ste
     BasicCCFPlan(midpoint, step, max, range_no_mask_change, mask_shape, line_list)
 end
 
-""" calc_ccf_v_grid( plan )
+""" `calc_ccf_v_grid( plan )`
 Return range with 2n+1 points between -v_max and v_max where CCF is to be evaluated.
 Units based on those in plan.
 """
@@ -47,7 +47,7 @@ function calc_ccf_v_grid(p::PlanT where PlanT<:BasicCCFPlan )
     range(p.v_center-n*p.v_step, p.v_center+n*p.v_step, length=2*n+1)
 end
 
-""" calc_length_ccf_v_grid( plan )
+""" `calc_length_ccf_v_grid( plan )`
 Return number of points in the velocity grid (without needing to create the range).
 """
 function calc_length_ccf_v_grid(p::PlanT where PlanT<:BasicCCFPlan )

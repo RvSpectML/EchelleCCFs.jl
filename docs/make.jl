@@ -13,6 +13,9 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Calculate CCFs" => "calc_ccf.md",
+        "Calculate RVs" => "calc_rv.md",
+        "Index" => "longlist.md"
     ],
 )
 

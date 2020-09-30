@@ -9,11 +9,8 @@ Created: August 2020
 const speed_of_light_mps = 2.99782458e8    # m/s
 
 
-"""
-    calc_doppler_factor(vel)
-
-Compute the longitudinal relativistic doppler factor given a velocity
-in meters per second.
+"""   `calc_doppler_factor(vel)``
+Compute the longitudinal relativistic doppler factor given a velocity in meters per second.
 """
 function calc_doppler_factor(vel::Real)
     one(vel) + vel/speed_of_light_mps

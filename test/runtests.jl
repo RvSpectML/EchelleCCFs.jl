@@ -37,7 +37,7 @@ using Test
         @test length(v_grid) == calc_length_ccf_v_grid(ccfpl)
     end
 
-    include("accuracy.jl")
+    include("calc_rv.jl")
 
     include("convenience.jl")
 

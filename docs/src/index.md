@@ -4,9 +4,7 @@ CurrentModule = EchelleCCFs
 
 # EchelleCCFs
 
-```@index
-```
-
-```@autodocs
-Modules = [EchelleCCFs]
+```@contents
+Pages = [ "index.md", "calc_ccf.md", "calc_rv.md"  ]
+Depth = 3
 ```

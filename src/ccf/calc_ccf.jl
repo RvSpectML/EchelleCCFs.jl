@@ -8,16 +8,16 @@ Refactored and optimized by Eric Ford
 """
 
 """
-    ccf_1D!(ccf_out, λs, fluxes; ccf_plan )
+    `ccf_1D!(ccf_out, λs, fluxes; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask.
     Generalized version that should work with different mask shapes.
 # Inputs:
-- ccf_out: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
-- λs: 1-d array of wavelengths
-- fluxes:  1-d array of fluxes
+- `ccf_out`: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  1-d array of fluxes
 # Optional Arguments:
-- plan:  parameters for computing ccf (BasicCCFPlan())
+- `plan`:  parameters for computing ccf (BasicCCFPlan())
 """
 function ccf_1D!(ccf_out::A1, λ::A2, flux::A3,
                 plan::PlanT = BasicCCFPlan(); projection_workspace::AbstractArray{T4,2} = zeros(length(λ),1),
@@ -55,17 +55,17 @@ global projection_mask_from_ccf1D
 global var_of_segment_from_ccf1D
 
 """
-    ccf_1D!(ccf_out, λs, fluxes, vars; ccf_plan )
+    `ccf_1D!(ccf_out, λs, fluxes, vars; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask.
     Generalized version that should work with different mask shapes.
     Weights each pixel by provided variance.
 # Inputs:
-- ccf_out: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
-- λs: 1-d array of wavelengths
-- fluxes:  1-d array of fluxes
+- `ccf_out`: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  1-d array of fluxes
 # Optional Arguments:
-- plan:  parameters for computing ccf (BasicCCFPlan())
+- `plan`:  parameters for computing ccf (BasicCCFPlan())
 """
 function ccf_1D!(ccf_out::A1, λ::A2, flux::A3, var::A4,
                 plan::PlanT = BasicCCFPlan(); projection_workspace::AbstractArray{T5,2} = zeros(length(λ),1),
@@ -197,14 +197,14 @@ end
 
 
 """
-    ccf_1D( λs, fluxes; ccf_plan )
+    `ccf_1D( λs, fluxes; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask.
 # Inputs:
-- λs: 1-d array of wavelengths
-- fluxes:  1-d array of fluxes
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  1-d array of fluxes
 # Optional Arguments:
-- ccf_plan:  parameters for computing ccf (BasicCCFPlan())
+- `ccf_plan`:  parameters for computing ccf (BasicCCFPlan())
 # Returns:
 - 1-d array of size length(calc_ccf_v_grid(plan))
 """
@@ -228,14 +228,14 @@ function ccf_1D(λ::A2, flux::A3, #line_list::ALL, #mask_shape1::A3
 end
 
 """
-    ccf_1D( λs, fluxes, vars; ccf_plan )
+    `ccf_1D( λs, fluxes, vars; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask.
 # Inputs:
-- λs: 1-d array of wavelengths
-- fluxes:  1-d array of fluxes
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  1-d array of fluxes
 # Optional Arguments:
-- ccf_plan:  parameters for computing ccf (BasicCCFPlan())
+- `ccf_plan`:  parameters for computing ccf (BasicCCFPlan())
 # Returns:
 - 1-d array of size length(calc_ccf_v_grid(plan))
 """
@@ -258,7 +258,7 @@ function ccf_1D(λ::A2, flux::A3, var::A4,
     return (ccf_out , projection_workspace)
 end
 
-""" project_mask!( output, λs, ccf_plan; shift_factor )
+""" `project_mask!( output, λs, ccf_plan; shift_factor )`
 
 Compute the projection of the mask onto the 1D array of wavelengths (λs) at a given shift factor (default: 1).
 The mask is computed from the ccf_plan, including a line_list and mask_shape (default: tophat).

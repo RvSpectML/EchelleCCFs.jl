@@ -37,7 +37,7 @@ end
 
 """
     Read mask in ESPRESSO csv format.
-ESPRESSO format: lambda and weight.
+ESPRESSO format: `lambda` and `weight`.
 Warning: ESPRESSO masks don't provide line depth and sometimes include one entry for a blend of lines.
 """
 function read_mask_espresso(fn::String; calcΔ::CCWT = default_calc_chunk_width) where { CCWT<:AbstractCalcChunkWidth }
@@ -52,7 +52,7 @@ function read_mask_espresso(fn::String; calcΔ::CCWT = default_calc_chunk_width)
 end
 
 """ Read mask in VALD csv format.
-   VALD format: lambda_lo, lambdaa_hi and depth.
+   VALD format: `lambda_lo`, `lambdaa_hi` and `depth`.
 """
 function read_mask_vald(fn::String; calcΔ::CCWT = default_calc_chunk_width) where { CCWT<:AbstractCalcChunkWidth }
     local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda_lo","lambda_hi","depth"])
@@ -68,7 +68,7 @@ function read_mask_vald(fn::String; calcΔ::CCWT = default_calc_chunk_width) whe
 end
 
 
-""" Return indices of any chunks in df that have overlapping lambda_hi[i] and lambda_lo[i+1].  """
+""" Return indices of any chunks in df that have overlapping `lambda_hi[i]` and `lambda_lo[i+1]`.  """
 function find_overlapping_chunks(df::DataFrame; verbose::Bool = true)
     @assert hasproperty(df,:lambda_lo)
     @assert hasproperty(df,:lambda_hi)
@@ -83,11 +83,11 @@ function find_overlapping_chunks(df::DataFrame; verbose::Bool = true)
 end
 
 """ Return DataFrame with specifications for each chunk which will contain one or more lines.
-    Input:  line_list a DataFrame with:
-    -  lambda_lo, lambda_hi, lambda, depth
+Input:  `line_list` a DataFrame with:
+    - `lambda_lo`, `lambda_hi`, `lambda`, `depth`
     Output:  DataFrame with
-    - lambda_lo & lambda_hi: boundaries for chunk
-    - lambda & line_depths: arrays with info about each line
+    - `lambda_lo` & `lambda_hi`: boundaries for chunk
+    - `lambda` & `line_depths`: arrays with info about each line
 """
 function merge_chunks(line_list::DataFrame)
     @assert hasproperty(line_list,:lambda_lo)

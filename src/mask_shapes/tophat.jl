@@ -12,13 +12,13 @@ struct TopHatCCFMask <: AbstractCCFMaskShape
     half_width::Float64
 end
 
-""" TopHatCCFMask( ; half_width=default_v_width ) """
+""" `TopHatCCFMask( ; half_width=default_v_width )`` """
 function TopHatCCFMask(w::Real=default_v_width)
     @assert 0 < w < default_v_max
     TopHatCCFMask(w/2)
 end
 
-""" TopHatCCFMask( inst  ) """
+""" `TopHatCCFMask( inst  )` """
 function TopHatCCFMask(inst::AbstractInstrument; scale_factor::Real = 1)
     w = scale_factor * default_ccf_mask_v_width(inst)
     TopHatCCFMask(w/2)

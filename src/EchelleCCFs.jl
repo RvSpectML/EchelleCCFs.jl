@@ -20,11 +20,11 @@ import RvSpectMLBase: num_chunks
 include("physics.jl")
 
 # Default values shared across instruments
-const default_line_width_mps = RvSpectMLBase.predict_intrinsic_stellar_line_width(5780,v_rot=1800)  # m/s
-default_chunk_size_factor = 3       # For default_calc_chunk_width TODO: Figure out what value to use.  Ask Alex
-default_min_chunk_Δv = 20000           # m/s  for ChunkWidthFixedΔlnλ
+const default_line_width_mps = RvSpectMLBase.default_line_width_mps  # m/s
+default_chunk_size_factor = RvSpectMLBase.default_chunk_size_factor        # For default_calc_chunk_width TODO: Figure out what value to use.  Ask Alex
+default_min_chunk_Δv = RvSpectMLBase.default_min_chunk_Δv           # m/s  for ChunkWidthFixedΔlnλ
 
-default_Δv_to_avoid_tellurics = 15000.0  # m/s
+default_Δv_to_avoid_tellurics = RvSpectMLBase.default_Δv_to_avoid_tellurics  # m/s
 
 include("masks/io.jl")
 export AbstractLineList, BasicLineList
@@ -43,5 +43,10 @@ const default_v_range_no_mask_change = default_v_max # m/s
 
 include("ccf/ccf.jl")
 # exports its own types/functions
+
+include("calc_rv/calc_rv.jl")
+using .RVFromCCF
+export measure_rv_from_ccf, measure_rvs_from_ccf
+export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian
 
 end
