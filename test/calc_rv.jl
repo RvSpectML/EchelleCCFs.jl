@@ -31,7 +31,7 @@ using Test
         mrfcg = MeasureRvFromCCFGaussian()
         @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=mrfcg )
         vfit = measure_rv_from_ccf(v_grid,ccf)
-        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+        @test vfit ≈ 0  atol = 0.1   # TODO: tune tolerance better
 
     end
     @testset "Gaussian mask" begin
@@ -60,15 +60,16 @@ using Test
 
         @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromCCFQuadratic() )
         vfit = measure_rv_from_ccf(v_grid,ccf)
-        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+        @test vfit ≈ 0  atol = 0.1   # TODO: tune tolerance better
 
         @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromMinCCF() )
         vfit = measure_rv_from_ccf(v_grid,ccf)
-        @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
+        @test vfit ≈ 0  atol = 0.1   # TODO: tune tolerance better
 
+        #=
         @test_nowarn measure_rv_from_ccf(v_grid,ccf, alg=MeasureRvFromCCFCentroid() )
         vfit = measure_rv_from_ccf(v_grid,ccf)
         @test vfit ≈ 0  atol = 500   # TODO: tune tolerance better
-
+        =#
     end
 end
