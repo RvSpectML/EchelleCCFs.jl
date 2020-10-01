@@ -4,7 +4,13 @@ Author: Eric Ford
 Created: September 2020
 """
 
-"""  Functor to estimate RV based on the centroid of the CCF.  """
+"""  Functor to estimate RV based on the centroid of the CCF.
+Inputs:
+* `vels`: Array of velocites where CCF was evaluated.
+* `ccf`:  Array of values of CCF
+* `ccf_var`:  Array of variances of CCF
+Warning: Not well tested yet
+"""
 struct MeasureRvFromCCFCentroid <: AbstractMeasureRvFromCCF
     frac_of_width_to_fit::Float64
     measure_width_at_frac_depth::Float64
@@ -43,13 +49,7 @@ function (mrv::MeasureRvFromCCFCentroid)(vels::A1, ccf::A2 ) where {T1<:Real, A1
 end
 =#
 
-"""
-Estimate RV based on centroid velocity of the CCF.
-Inputs:
-* `vels`: Array of velocites where CCF was evaluated.
-* `ccf`:  Array of values of CCF
-Only makes sense if the CCF has been variance normalized.  So don't use this yet.
-"""
+# See struct for functor due to bug in Julia/Documenter.jl
 function (mrv::MeasureRvFromCCFCentroid)(vels::A1, ccf::A2, ccf_var::A3 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1} }
     # find the min and use only that part of the CCF for computing centroid
     amin, inds = find_idx_at_and_around_minimum(vels, ccf,
