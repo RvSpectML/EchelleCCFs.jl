@@ -56,7 +56,9 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2 ) where {T1<:Real, A1
         result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), p0)
 
         if result.converged
-           rvfit = coef(result)[1]
+           rv = coef(result)[1]
+           sigma_rv = stderror(result)[1]
+           rvfit = (rv=rv, σ_rv=sigma_rv)
         else
            @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
            quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=frac_of_width_to_fit,measure_width_at_frac_depth=measure_width_at_frac_depth)
@@ -65,5 +67,32 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2 ) where {T1<:Real, A1
         return rvfit
 end
 
+
+function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_var::A3 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1} }
+        # find the min and fit only the part near the minimum of the CCF
+        amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
+
+        # make initial guess parameters
+        μ = vels[amin]
+        σ = mrv.init_guess_ccf_σ                          # TODO: Make sure this is robust.
+        minccf, maxccf = extrema(ccf)
+        amp = minccf - maxccf
+        y0 = maxccf
+        p0 = [μ, σ, amp, y0]
+
+        # fit and return the mean of the distribution
+        result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), 1.0 ./ view(ccf_var,inds),  p0)
+
+        if result.converged
+           rv = coef(result)[1]
+           sigma_rv = stderror(result)[1]
+           rvfit = (rv=rv, σ_rv=sigma_rv)
+        else
+           @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
+           quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
+           rvfit = quad_fit_to_ccf(vels,ccf,ccf_var)
+        end
+        return rvfit
+end
 
 #end # module FitGaussianToCCF

@@ -25,36 +25,62 @@ function (::AbstractMeasureRvFromCCF)(vels::A1, ccf::A2 ) where {T1<:Real, A1<:A
 # Functions to be exported
 
 """
-    `measure_rv_from_ccf(vels, ccf; alg )`
+    `measure_rv_from_ccf(vels, ccf, [ccf_var]; alg )`
 Return estimated RV based on the CCF using specified algorithm object.
 Inputs:
 * `vels`: Array of velocites where CCF was evaluated.
 * `ccf`:  Array of values of CCF
 Optional Arguements:
-* `alg`: Functor specifying how to measure the RV from the CCF.  Options include:
+* `alg`: Functor specifying how to measure the RV and it's uncertainty from the CCF.  Options include:
 MeasureRvFromCCFGaussian (default), MeasureRvFromCCFQuadratic, MeasureRvFromCCFCentroid, and MeasureRvFromMinCCF.
 """
+function measure_rv_from_ccf  end
+
 function measure_rv_from_ccf(vels::A1, ccf::A2, ; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
                 T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, AlgT<:AbstractMeasureRvFromCCF }
     return alg(vels,ccf)
 end
 
-"""   `measure_rv_from_ccf(vels, ccf; alg )`
-At each time, return the estimated radial velocity based on the CCF using the specified algorithm.
+function measure_rv_from_ccf(vels::A1, ccf::A2, ccf_var::A3 ; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
+                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, AlgT<:AbstractMeasureRvFromCCF }
+    return alg(vels,ccf,ccf_var)
+end
+
+"""   `measure_rvs_from_ccf(vels, ccf, [ccf_var]; alg )`
+At each time, return the estimated radial velocities based on the CCFs using the specified algorithm.
 Inputs:
 * `vels`: Array of velocites where CCF was evaluated.
 * `ccf`:  Array of values of CCF
 Optional Arguements:
-* `alg`: Functor specifying how to measure the RV from the CCF.  Options include:
+* `alg`: Functor specifying how to measure the RV and its uncertainty from the CCF.  Options include:
 MeasureRvFromCCFGaussian (default), MeasureRvFromCCFQuadratic, MeasureRvFromCCFCentroid, and MeasureRvFromMinCCF.
 """
+function measure_rvs_from_ccf end
+
 function measure_rvs_from_ccf(vels::A1, ccf::A2; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
                 T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,2}, AlgT<:AbstractMeasureRvFromCCF }
-    RVs = zeros(size(ccf,2))
-    for i in eachindex(RVs)
-        RVs[i] = measure_rv_from_ccf(vels, view(ccf,:,i), alg=alg)
+    nobs = size(ccf,2)
+    rvs = zeros(nobs)
+    σ_rvs = zeros(nobs)
+    for i in 1:nobs
+        (rv, σ_rv) = measure_rv_from_ccf(vels, view(ccf,:,i), alg=alg)
+        rvs[i] = rv
+        σ_rvs[i] = σ_rv
     end
-    return RVs
+    return (rvs=rvs, σ_rvs=σ_rvs)
+end
+
+function measure_rvs_from_ccf(vels::A1, ccf::A2, ccf_var::A3; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
+                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,2}, T3<:Real, A3<:AbstractArray{T3,2}, AlgT<:AbstractMeasureRvFromCCF }
+    nobs = size(ccf,2)
+    rvs = zeros(nobs)
+    σ_rvs = zeros(nobs)
+    for i in 1:nobs
+        (rv, σ_rv) = measure_rv_from_ccf(vels, view(ccf,:,i), view(ccf_var,:,i), alg=alg)
+        rvs[i] = rv
+        σ_rvs[i] = σ_rv
+    end
+    return (rvs=rvs, σ_rvs=σ_rvs)
 end
 
 # Utility functions

@@ -22,6 +22,12 @@ function BasicLineList{T}(λ::AA, w::AA) where { T<:Real, AA<:AbstractArray{T,1}
     BasicLineList{eltype(w),typeof(w)}(λ,w)
 end
 
+function BasicLineList( df::DataFrame )
+    @assert hasproperty(df,:lambda)
+    @assert hasproperty(df,:weight)
+    BasicLineList{eltype(df[:,:lambda]),typeof(df[:,:weight])}(df[:,:lambda],df[:,:weight])
+end
+
 function EmptyBasicLineList()
     return BasicLineList{Float64,Array{Float64,1}}(zeros(0),zeros(0))
 end

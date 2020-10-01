@@ -51,23 +51,73 @@ function ccf_1D!(ccf_out::A1, λ::A2, flux::A3,
     return ccf_out
 end
 
-global projection_mask_from_ccf1D
-global var_of_segment_from_ccf1D
+"""
+    `ccf_1D!(ccf_out, ccf_var_out, λs, fluxes, var; ccf_plan )`
+
+Compute the cross correlation function of a spectrum with a mask.
+    Generalized version that should work with different mask shapes.
+# Inputs:
+- `ccf_out`: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
+- `ccf_var_out`:  1-d array of size length(calc_ccf_v_grid(plan)) to store output
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  1-d array of fluxes
+- `var`:  1-d array of flux variances
+# Optional Arguments:
+- `plan`:  parameters for computing ccf (BasicCCFPlan())
+"""
+function ccf_1D!(ccf_out::A1, ccf_var_out::A1, λ::A2, flux::A3, var::A4,
+                plan::PlanT = BasicCCFPlan(); projection_workspace::AbstractArray{T5,2} = zeros(length(λ),1),
+                assume_sorted::Bool = false ) where {
+                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,1}, T5<:Real,
+                PlanT<:AbstractCCFPlan }
+    # make sure wavelengths and spectrum are 1D arrays
+    @assert ndims(λ) == 1
+    @assert ndims(flux) == 1
+    @assert length(λ) == length(flux)
+    @assert assume_sorted || issorted( plan.line_list.λ )
+    v_grid = calc_ccf_v_grid(plan)
+    @assert size(ccf_out,1) == size(ccf_var_out,1)
+    @assert size(ccf_out,1) == length(v_grid)
+
+
+    if length(plan.line_list) < 1  # If no lines in chunk
+        ccf_out .= zero(eltype(A1))
+        ccf_var_out .= zero(eltype(A1))
+        return (ccf=ccf_out, ccf_var=ccf_var_out)
+    end
+
+    @assert size(projection_workspace,1) == length(λ)
+
+    # loop through each velocity, project the mask and compute ccf at given v
+    for i in 1:size(ccf_out,1)
+        # project shifted mask on wavelength domain
+        doppler_factor = calc_doppler_factor(v_grid[i])
+        project_mask!(projection_workspace, λ, plan, shift_factor=doppler_factor)
+
+        # compute the ccf value at the current velocity shift
+        ccf_out[i] = sum(flux .* projection_workspace)
+        ccf_var_out[i] = sum(var .* projection_workspace)
+    end
+    return (ccf=ccf_out, ccf_var=ccf_var_out)
+end
 
 """
-    `ccf_1D!(ccf_out, λs, fluxes, vars; ccf_plan )`
+    `ccf_1D_exper!(ccf_out, ccf_var_out, λs, fluxes, vars; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask.
     Generalized version that should work with different mask shapes.
     Weights each pixel by provided variance.
+    WARNING: Still experimenting.  Needs testing.
 # Inputs:
 - `ccf_out`: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
+- `ccf_var_out`: 1-d array of size length(calc_ccf_v_grid(plan)) to store output
 - `λs`: 1-d array of wavelengths
 - `fluxes`:  1-d array of fluxes
+- `var`:  1-d array of flux variances
 # Optional Arguments:
 - `plan`:  parameters for computing ccf (BasicCCFPlan())
 """
-function ccf_1D!(ccf_out::A1, λ::A2, flux::A3, var::A4,
+function ccf_1D_exper!(ccf_out::A1, ccf_var_out::A1, λ::A2, flux::A3, var::A4,
                 plan::PlanT = BasicCCFPlan(); projection_workspace::AbstractArray{T5,2} = zeros(length(λ),1),
                 assume_sorted::Bool = false ) where {
                 T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,1}, T5<:Real,
@@ -83,7 +133,8 @@ function ccf_1D!(ccf_out::A1, λ::A2, flux::A3, var::A4,
 
     if length(plan.line_list) < 1  # If no lines in chunk
         ccf_out .= zero(eltype(A1))
-        return ccf_out
+        ccf_var_out .= zero(eltype(A1))
+        return (ccf=ccf_out, ccf_var=ccf_var_out)
     end
 
     @assert size(projection_workspace,1) == length(λ)
@@ -121,10 +172,14 @@ function ccf_1D!(ccf_out::A1, λ::A2, flux::A3, var::A4,
             var_of_segment[segment_start:end] .= sum_var_in_mask_segment/n_in_mask_segment
         end
         # compute the ccf value at the current velocity shift
-        #ccf_out[i] = sum(projection_workspace .* ( (flux.-1) ./ var) )
-        ccf_out[i] = sum(projection_workspace .* ( (flux.-1) ./ var_of_segment) )
+        ccf_out[i] = sum(projection_workspace .* flux )
+        ccf_var_out[i] = sum(projection_workspace .* var_of_segment  )
         #ccf_out[i] = sum(projection_workspace .* ( (flux.-1)  ))
+        #ccf_out[i] = sum(projection_workspace .* ( (flux.-1) ./ var) )
     end
+    return (ccf=ccf_out, ccf_var=ccf_var_out)
+end
+    #=
     best_i = argmin(ccf_out)
     doppler_factor = calc_doppler_factor(v_grid[best_i])
     project_mask!(projection_workspace, λ, plan, shift_factor=doppler_factor)
@@ -192,14 +247,14 @@ function ccf_1D!(ccf_out::A1, λ::A2, flux::A3, var::A4,
     #weightsum =  sum(1.0 ./ var)
     #ccf_out ./= weightsum
     #ccf_out .*= mean(flux)
-    return ccf_out
+    return (ccf=ccf_out, ccf_var=ccf_var_out)
 end
+    =#
 
 
 """
     `ccf_1D( λs, fluxes; ccf_plan )`
-
-Compute the cross correlation function of a spectrum with a mask.
+    Compute the cross correlation function of a spectrum with a mask.
 # Inputs:
 - `λs`: 1-d array of wavelengths
 - `fluxes`:  1-d array of fluxes
@@ -217,7 +272,6 @@ function ccf_1D(λ::A2, flux::A3, #line_list::ALL, #mask_shape1::A3
     @assert ndims(λ) == 1
     @assert ndims(flux) == 1
     @assert length(λ) == length(flux)
-
     len_v_grid = calc_length_ccf_v_grid(plan)
     ccf_out = zeros(len_v_grid)
     if length(plan.line_list) < 1  # If no lines in chunk
@@ -230,7 +284,9 @@ end
 """
     `ccf_1D( λs, fluxes, vars; ccf_plan )`
 
-Compute the cross correlation function of a spectrum with a mask.
+Compute the cross correlation function of a spectrum with a mask and its variance.
+    This version uses pixel variances.
+    WARNING: Still experimenting.  Needs testing.
 # Inputs:
 - `λs`: 1-d array of wavelengths
 - `fluxes`:  1-d array of fluxes
@@ -248,14 +304,14 @@ function ccf_1D(λ::A2, flux::A3, var::A4,
     @assert ndims(λ) == 1
     @assert ndims(flux) == 1
     @assert length(λ) == length(flux)
-
     len_v_grid = calc_length_ccf_v_grid(plan)
     ccf_out = zeros(len_v_grid)
+    ccf_var_out = zeros(len_v_grid)
     if length(plan.line_list) < 1  # If no lines in chunk
-        return ccf_out
+        return (ccf=ccf_out , ccf_var=ccf_var_out)
     end
-    ccf_1D!(ccf_out, λ, flux, var, plan )
-    return (ccf_out , projection_workspace)
+    ccf_1D!(ccf_out, ccf_var_out, λ, flux, var, plan )
+    return (ccf=ccf_out , ccf_var=ccf_var_out)
 end
 
 """ `project_mask!( output, λs, ccf_plan; shift_factor )`

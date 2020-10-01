@@ -21,10 +21,10 @@ include("physics.jl")
 
 # Default values shared across instruments
 const default_line_width_mps = RvSpectMLBase.default_line_width_mps  # m/s
-default_chunk_size_factor = RvSpectMLBase.default_chunk_size_factor        # For default_calc_chunk_width TODO: Figure out what value to use.  Ask Alex
-default_min_chunk_Δv = RvSpectMLBase.default_min_chunk_Δv           # m/s  for ChunkWidthFixedΔlnλ
+default_chunk_size_factor = 3        # For default_calc_chunk_width TODO: Figure out what value to use.  Ask Alex
+default_min_chunk_Δv = 20000           # m/s  for ChunkWidthFixedΔlnλ
 
-default_Δv_to_avoid_tellurics = RvSpectMLBase.default_Δv_to_avoid_tellurics  # m/s
+default_Δv_to_avoid_tellurics = 30000  # m/s
 
 include("masks/io.jl")
 export AbstractLineList, BasicLineList

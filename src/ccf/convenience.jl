@@ -30,6 +30,26 @@ function calc_ccf_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPl
   return ccf_out
 end
 
+"""  `calc_ccf_and_var_chunk( chunk, ccf_plan )`
+Convenience function to compute CCF for one chunk of spectrum.
+# Inputs:
+- chunk
+# Optional Arguments:
+- `ccf_plan` (BasicCCFPlan())
+# Return:
+CCF for one chunk of spectrum, evaluated using mask_shape and line list from ccf plan
+"""
+function calc_ccf_and_var_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPlan()
+                 ; var::AbstractVector{T} = chunk.var,
+                 assume_sorted::Bool = false ) where { T<:Real, PlanT<:AbstractCCFPlan }
+  @assert assume_sorted || issorted( plan.line_list.λ )
+  len_v_grid = calc_length_ccf_v_grid(plan)
+  ccf_out = zeros(len_v_grid)
+  ccf_var_out = zeros(len_v_grid)
+  ccf_1D!(ccf_out, ccf_var_out, chunk.λ, chunk.flux, var, plan; assume_sorted=true)
+  return (ccf=ccf_out, ccf_var=ccf_var_out)
+end
+
 """  `calc_ccf_chunklist ( chunklist, ccf_plans )`
 Convenience function to compute CCF based on a spectrum's chunklist.
 # Inputs:
@@ -49,6 +69,40 @@ function calc_ccf_chunklist(chunk_list::AbstractChunkList,
                     assume_sorted=assume_sorted, use_pixel_vars=use_pixel_vars), +, 1:length(chunk_list.data) )
 end
 
+using NamedTupleTools
+
+function add_tuple_sum(x::NT, y::NT) where { NT<:NamedTuple }
+    @assert all(fieldtypes(x) .== fieldtypes(y))
+    names_of_values = propertynames(x)
+    @assert propertynames(y)  == names_of_values
+    values_of_x = fieldvalues(x)
+    values_of_y = fieldvalues(y)
+    #nt = namedtuple(names_of_values, values_of_x .+ values_of_y )
+    values = map(t->t[1].+t[2], zip(values_of_x,values_of_y))
+    nt = namedtuple(names_of_values, values )
+    return nt
+end
+
+
+"""  `calc_ccf_and_var_chunklist ( chunklist, ccf_plans )`
+Convenience function to compute CCF based on a spectrum's chunklist.
+# Inputs:
+- chunklist
+- vector of ccf plans (one for each chunk)
+# Optional Arguments:
+# Return:
+CCF summed over all chunks in a spectrum's chunklist, evaluated using the
+line list and mask_shape from the ccf plan for each chunk.
+"""
+function calc_ccf_and_var_chunklist(chunk_list::AbstractChunkList,
+                                plan_for_chunk::AbstractVector{PlanT};
+                                assume_sorted::Bool = false, use_pixel_vars::Bool = false   ) where {
+                                            PlanT<:AbstractCCFPlan }
+  @assert length(chunk_list) == length(plan_for_chunk)
+  (ccf_out, ccf_var_out ) = mapreduce(chid->calc_ccf_and_var_chunk(chunk_list.data[chid], plan_for_chunk[chid],
+                    assume_sorted=assume_sorted #=, use_pixel_vars=use_pixel_vars =# ), add_tuple_sum, 1:length(chunk_list.data) )
+  return (ccf=ccf_out, ccf_var=ccf_var_out)
+end
 
 """  `calc_ccf_chunklist ( chunklist, var_list, ccf_plans )`
 Convenience function to compute CCF based on a spectrum's chunklist.
@@ -90,7 +144,7 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
 """
 function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
                                 plan::PlanT = BasicCCFPlan(); verbose::Bool = false,
-                                use_pixel_vars::Bool = false  ) where { PlanT<:AbstractCCFPlan }
+                                calc_ccf_var::Bool = false, use_pixel_vars::Bool = false  ) where { PlanT<:AbstractCCFPlan }
 
   @assert issorted( plan.line_list.λ )
   num_lines = length(plan.line_list.λ)
@@ -136,10 +190,26 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
             #return var_list
       end
   end
+  #=
   if use_pixel_vars
       return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], var_list, plan_for_chunk,assume_sorted=true, use_pixel_vars=true),hcat, 1:length(clt) )
   else
       return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=false),hcat, 1:length(clt) )
+  end
+  =#
+  if calc_ccf_var
+       #return @threaded mapreduce(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=true),hcat, 1:length(clt) )
+       list_of_ccf_and_var = @threaded map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=true), 1:length(clt) )
+       nvs = length(first(list_of_ccf_and_var).ccf)
+       ccfs_out = zeros(nvs,length(clt))
+       ccf_vars_out = zeros(nvs,length(clt))
+       for obsid in 1:length(clt)
+           ccfs_out[:,obsid] .= list_of_ccf_and_var[obsid].ccf
+           ccf_vars_out[:,obsid] .= list_of_ccf_and_var[obsid].ccf_var
+       end
+       return (ccfs=ccfs_out, ccf_vars=ccf_vars_out)
+  else
+       return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=false),hcat, 1:length(clt) )
   end
 end
 
