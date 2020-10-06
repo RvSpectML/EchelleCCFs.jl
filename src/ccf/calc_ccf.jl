@@ -418,7 +418,7 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
                 λsre_cur = p<length(projection) ? 0.5*(λs[p]+λs[p+1]) : λs[p]+0.5*(λs[p]-λs[p-1])    # Current pixel's right edge
             end
         end
-        if p>length(projection) break end       # We're done with all pixels in this chunk.
+        if p>=length(projection) break end       # We're done with all pixels in this chunk.
     end
     projection ./= c_mps
     return projection

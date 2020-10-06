@@ -221,7 +221,7 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 - chunklist_timeseries
 - vector of ccf plans (one for each chunk)
 # Return:
-A 2-d array containing the CCF at each (velocity, chunk)
+A 2-d array containing the CCF at each (velocity, chunk) 
 """
 function calc_order_ccfs_chunklist(chunk_list::AbstractChunkList,
     plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan(); assume_sorted::Bool = false, use_pixel_vars::Bool = false  ) where {

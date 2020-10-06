@@ -20,7 +20,7 @@ struct BasicCCFPlan{MST<:AbstractCCFMaskShape, LLT<:AbstractLineList} <: Abstrac
                           mask_shape::MST, line_list::LLT ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
         @assert 1.0e3 <= max <=100.0e3    # Reasonable range m/s, designed to prevent mistakes
         @assert 1 < step < 1000           # Reasonable range m/s
-        @assert abs(midpoint) < max
+        #@assert abs(midpoint) < max      # Not true for SOAP simulations to ESPRESSO G2 mask
         new{MST,LLT}(midpoint, step, max, range_no_mask_change, mask_shape, line_list)
     end
 

@@ -2,6 +2,7 @@
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
+deps/build.log
 /profiling
 
 Manifest.toml
@@ -12,6 +13,7 @@ test/Manifest.toml
 
 # Large files to be downloaded outside of git
 /data/large
+/data/spectra/*.h5
 
 # Temporary files
 tmp.jl

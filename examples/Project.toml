@@ -1,0 +1,4 @@
+[deps]
+EchelleCCFs = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
