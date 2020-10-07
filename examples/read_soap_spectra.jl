@@ -1,6 +1,7 @@
 import Pkg
 Pkg.activate(joinpath(pkgdir(EchelleCCFs),"examples"))
 
+using EchelleCCFs
 using HDF5, FileIO
 
 include("../deps/download_soap_example.jl")
@@ -11,7 +12,8 @@ function read_soap_output_gilbertson_ford_dumuseque_2020(filename::String, obs_i
         flux_size = size(file["active"])
         @assert 1<= obs_idx <= flux_size[2]
         flux = file["active"][1:flux_size[1],obs_idx]
-        λ =  read(file,"lambdas")
+        λair =  read(file,"lambdas")
+        λ = EchelleCCFs.λ_air_to_vac.(λair)
         idx_min = findfirst(x->x>0, flux)
         idx_max = findlast(x->x>0, flux)
         λ = view(λ,idx_min:idx_max)
