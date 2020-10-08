@@ -3,8 +3,8 @@
 
 include("download.jl")
 
-download_url = "https://zenodo.org/record/3753254/files/res-1000-1years_full_id1.h5?download=1"
-download_filename = joinpath("..","data","spectra","res-1000-1years_full_id1.h5")
-download_md5 = "5659082144cd093d617bb54dca937ad9"
+download_url = "https://psu.box.com/shared/static/nikva44r7xai9h0ulfj2pxewzv8ez4fo.h5"
+download_filename = joinpath("..","data","spectra","soap_demo.h5")
+download_md5 = "18a6291039d7684ef9187762e4b2dfd5"
 
 download_and_check_md5sum(download_url, download_filename, md5_goal=download_md5)

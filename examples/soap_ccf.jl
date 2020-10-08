@@ -4,7 +4,8 @@ using EchelleCCFs
 using Statistics
 using DataFrames, Query
 
-include("read_soap_spectra.jl")
+include("read_soap_spectra_demo.jl")
+#include("read_soap_spectra_gilbertson_etal_2020.jl")
 
 λ_min = max(3950, minimum(λ) )  # Avoid Ca H & K lines
 λ_max = min(6800, maximum(λ) )  # Avoid worst of telluric regions

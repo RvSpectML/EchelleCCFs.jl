@@ -24,7 +24,7 @@ const default_line_width_mps = RvSpectMLBase.default_line_width_mps  # m/s
 default_chunk_size_factor = 3        # For default_calc_chunk_width TODO: Figure out what value to use.  Ask Alex
 default_min_chunk_Δv = 20000           # m/s  for ChunkWidthFixedΔlnλ
 
-default_Δv_to_avoid_tellurics = 30000  # m/s
+default_Δv_to_avoid_tellurics = 30000  # 2pi AU /year in m/s with a a little extra padding for Earth's rotation
 
 include("masks/io.jl")
 export AbstractLineList, BasicLineList
