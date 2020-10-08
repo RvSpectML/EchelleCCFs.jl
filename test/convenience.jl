@@ -23,7 +23,6 @@ using Test
     λs = exp.(range(log(λlo),stop=log(λhi),length=npix))
     flux = ones(size(λs))
     flux .*= 1 .- d1.*exp.(-0.5.*((λs.-λ1)./λ1.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
-
     flux .*= 1 .- d2.*exp.(-0.5.*((λs.-λ2)./λ2.*(EchelleCCFs.speed_of_light_mps./σ_v)).^2)
     @testset "calc_ccf_chunk" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
@@ -37,7 +36,7 @@ using Test
     @testset "calc_order_ccfs_chunklist" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
-        @test_nowarn EchelleCCFs.calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
+        @test_nowarn calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
     end
 
     #= Not working
