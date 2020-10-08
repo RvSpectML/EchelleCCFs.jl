@@ -338,7 +338,7 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
     while m <= length(plan.line_list.λ) && λ_min(plan.mask_shape,plan.line_list.λ[m]) * shift_factor < λsle_cur   # only includemask entry if it fit entirely in chunk
         m += 1
     end
-    if m >= length(plan.line_list.λ)   # Return early if no lines fall within chunk's lambda's
+    if m > length(plan.line_list.λ)   # Return early if no lines fall within chunk's lambda's
         return projection
     else
         #println("# Starting with mask entry at λ=", plan.line_list.λ[m], " for chunk with λ= ",first(λs)," - ",last(λs))
@@ -385,7 +385,7 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
                 λsle_cur = λsre_cur   # Current pixel's left edge
                 λsre_cur = p<length(projection) ? 0.5*(λs[p]+λs[p+1]) : λs[p]+0.5*(λs[p]-λs[p-1])    # Current pixel's right edge
             end
-        else
+        else  # on_mask == true
             if λsre_cur > mask_hi               # Right edge of this pixel moved past the edge of the current line's mask
                 #For Tophat: projection[p] += mask_weight * (mask_hi - λsle_cur) / (λsre_cur - λsle_cur)
                 frac_of_psf_in_v_pixel = integrate(plan.mask_shape, (λsle_cur-mask_mid)*c_mps/mask_mid, (mask_hi-mask_mid)*c_mps/mask_mid)

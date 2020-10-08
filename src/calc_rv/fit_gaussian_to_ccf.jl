@@ -61,7 +61,7 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2 ) where {T1<:Real, A1
            rvfit = (rv=rv, σ_rv=sigma_rv)
         else
            @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
-           quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=frac_of_width_to_fit,measure_width_at_frac_depth=measure_width_at_frac_depth)
+           quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
            rvfit = quad_fit_to_ccf(vels,ccf)
         end
         return rvfit
@@ -89,6 +89,7 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_var::A3 ) where 
            rvfit = (rv=rv, σ_rv=sigma_rv)
         else
            @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
+           # println("# Tried fitting between ", extrema(view(vels,inds)), " over which CCF varied within ", extrema(view(ccf,inds)) )
            quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
            rvfit = quad_fit_to_ccf(vels,ccf,ccf_var)
         end
