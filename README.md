@@ -6,7 +6,7 @@ Examples of using it with other RvSpectML packages can be found in the examples 
 
 ## Examples
 The EchelleCCFs package includes a few simplistic tests and one example of applying it to simulated solar spectra from [Gilbertson, Ford & Dumusque 2020](https://doi.org/10.5281/zenodo.3753253) which is described in the associated [Research Note of the AAS](https://ui.adsabs.harvard.edu/link_gateway/2020RNAAS...4...59G/doi:10.3847/2515-5172/ab8d44).  
-The input file for this example is large, so it is not part of the GitHub repository, but is downloaded after installing the package.
+The input file for this example is large, so it is not part of the GitHub repository, but is downloaded as part of the build process for the the package.
 To install the package, download the simulated data and perform a CCF calculation, you can run
 
 ```julia
@@ -19,6 +19,6 @@ Pkg.instantiate()      # Installs extra packages for example
 include("soap_ccf.jl") # Run example CCF calculation and make plots
 ```
 
-To analyze a more spectra from this dataset, you'll need to download an even larger dataset, as illustrated in `deps/download_soap_example_from_gilbertson_etal_2020.jl`.
+To analyze more spectra from the [Gilbertson, Ford & Dumusque 2020 dataset](https://doi.org/10.5281/zenodo.3753253), you'll need to download even larger file(s), as illustrated in `deps/download_soap_example_from_gilbertson_etal_2020.jl`.
 
 Good luck.

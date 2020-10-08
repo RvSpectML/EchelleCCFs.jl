@@ -15,6 +15,7 @@ makedocs(;
         "Home" => "index.md",
         "Calculate CCFs" => "calc_ccf.md",
         "Calculate RVs" => "calc_rv.md",
+        "Examples" => "examples.md",
         "Index" => "longlist.md"
     ],
 )
