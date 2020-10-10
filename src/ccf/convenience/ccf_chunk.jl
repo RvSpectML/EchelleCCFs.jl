@@ -98,6 +98,6 @@ function calc_ccf_and_var_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = Ba
   len_v_grid = calc_length_ccf_v_grid(plan)
   ccf_out = zeros(len_v_grid)
   ccf_var_out = zeros(len_v_grid)
-  calc_ccf_and_var_chunk(ccf_out, ccf_var_out, chunk, plan, var=var, assume_sorted=assume_sorted, use_pixel_vars=use_pixel_vars )
+  calc_ccf_and_var_chunk!(ccf_out, ccf_var_out, chunk, plan, var=var, assume_sorted=assume_sorted #=, use_pixel_vars=use_pixel_vars =# )
   return (ccf=ccf_out, ccf_var=ccf_var_out)
 end

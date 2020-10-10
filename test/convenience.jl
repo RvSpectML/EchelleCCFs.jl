@@ -27,16 +27,27 @@ using Test
     @testset "calc_ccf_chunk" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         @test_nowarn calc_ccf_chunk(chunk, ccfpl)
+        @test_nowarn calc_ccf_and_var_chunk(chunk, ccfpl)
     end
     @testset "calc_ccf_chunklist" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
         @test_nowarn calc_ccf_chunklist(chunklist, fill(ccfpl,3) )
+        @test_nowarn calc_ccf_and_var_chunklist(chunklist, fill(ccfpl,3) )
     end
     @testset "calc_order_ccfs_chunklist" begin
         chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
         chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
         @test_nowarn calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
+        @test_nowarn calc_order_ccf_and_vars_chunklist(chunklist, fill(ccfpl,3)  )
+    end
+
+    @testset "Compare calc_ccfs_chunklist and calc_order_ccfs_chunklist" begin
+        chunk = ChunkOfSpectrum(λs,flux,ones(size(flux)))
+        chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
+        ccf = calc_ccf_chunklist(chunklist, fill(ccfpl,3) )
+        order_ccf = calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
+        @test all(ccf .== sum(order_ccf,dims=2))
     end
 
     #= Not working
