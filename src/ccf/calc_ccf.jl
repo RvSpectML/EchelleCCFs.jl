@@ -263,12 +263,10 @@ end
 # Returns:
 - 1-d array of size length(calc_ccf_v_grid(plan))
 """
-function ccf_1D(λ::A2, flux::A3, #line_list::ALL, #mask_shape1::A3
+function ccf_1D(λ::A2, flux::A3,
                 plan::PlanT = BasicCCFPlan() ) where {
-                #; mask_shape::ACMS = TopHatCCFMask(), plan::PlanT = BasicCCFPlan() ) where {
-                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1},
-                #ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape, AP<:AbstractCCFPlan }
-                PlanT<:AbstractCCFPlan } # ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape }
+                T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1},
+                PlanT<:AbstractCCFPlan }
     @assert ndims(λ) == 1
     @assert ndims(flux) == 1
     @assert length(λ) == length(flux)
