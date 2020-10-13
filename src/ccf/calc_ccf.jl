@@ -292,12 +292,11 @@ end
 # Returns:
 - 2-d array of size (length(calc_ccf_v_grid(plan)), size(flux, 2))
 """
-function ccf_1D(λ::A2, flux::A3, #line_list::ALL, #mask_shape1::A3
+function ccf_1D_test(λ::A2, flux::A3,
                 plan::PlanT = BasicCCFPlan() ) where {
-                #; mask_shape::ACMS = TopHatCCFMask(), plan::PlanT = BasicCCFPlan() ) where {
-                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,2},
-                #ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape, AP<:AbstractCCFPlan }
-                PlanT<:AbstractCCFPlan } # ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape }
+                T2<:Real, A2<:AbstractArray{T2,1},
+                T3<:Real, A3<:AbstractArray{T3,2},
+                PlanT<:AbstractCCFPlan }
     @assert ndims(λ) == 1
     @assert ndims(flux) == 2
     @assert length(λ) == size(flux, 1)
@@ -307,8 +306,10 @@ function ccf_1D(λ::A2, flux::A3, #line_list::ALL, #mask_shape1::A3
         return ccf_out
     end
 
+    ccf_temp = zeros(len_v_grid)
     for i in 1:size(flux, 2)
-        ccf_out[:,i] = ccf_1D(λ, flux[:,i], plan)
+        ccf_1D!(ccf_temp, λ, flux[:,i], plan)
+        ccf_out[:,i] = ccf_temp
     end
     return ccf_out
 end
