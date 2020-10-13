@@ -297,10 +297,8 @@ Compute the cross correlation function of a spectrum with a mask and its varianc
 """
 function ccf_1D(λ::A2, flux::A3, var::A4,
                 plan::PlanT = BasicCCFPlan() ) where {
-                #; mask_shape::ACMS = TopHatCCFMask(), plan::PlanT = BasicCCFPlan() ) where {
-                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,1},
-                #ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape, AP<:AbstractCCFPlan }
-                PlanT<:AbstractCCFPlan } # ALL<:AbstractLineList, ACMS<:AbstractCCFMaskShape }
+                T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,1},
+                PlanT<:AbstractCCFPlan }
     @assert ndims(λ) == 1
     @assert ndims(flux) == 1
     @assert length(λ) == length(flux)
