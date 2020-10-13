@@ -280,6 +280,37 @@ function ccf_1D(λ::A2, flux::A3,
 end
 
 """
+    `ccf_1D( λs, fluxes; ccf_plan )`
+    Compute the cross correlation functions of spectra with a mask.
+# Inputs:
+- `λs`: 1-d array of wavelengths
+- `fluxes`:  2-d array of fluxes, individual spectra along first dim
+# Optional Arguments:
+- `ccf_plan`:  parameters for computing ccf (BasicCCFPlan())
+# Returns:
+- 2-d array of size (length(calc_ccf_v_grid(plan)), size(flux, 2))
+"""
+function ccf_1D_test(λ::A2, flux::A3,
+                plan::PlanT = BasicCCFPlan() ) where {
+                T2<:Real, A2<:AbstractArray{T2,1},
+                T3<:Real, A3<:AbstractArray{T3,2},
+                PlanT<:AbstractCCFPlan }
+    @assert ndims(λ) == 1
+    @assert ndims(flux) == 2
+    @assert length(λ) == size(flux, 1)
+    len_v_grid = calc_length_ccf_v_grid(plan)
+    ccf_out = zeros(len_v_grid, size(flux, 2))
+    if length(plan.line_list) < 1  # If no lines in chunk
+        return ccf_out
+    end
+
+    for i in 1:size(flux, 2)
+        ccf_1D!(view(ccf_out, :, i), λ, view(flux, :, i), plan)
+    end
+    return ccf_out
+end
+
+"""
     `ccf_1D( λs, fluxes, vars; ccf_plan )`
 
 Compute the cross correlation function of a spectrum with a mask and its variance.
