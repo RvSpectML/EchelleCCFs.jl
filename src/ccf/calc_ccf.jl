@@ -306,10 +306,8 @@ function ccf_1D_test(λ::A2, flux::A3,
         return ccf_out
     end
 
-    ccf_temp = zeros(len_v_grid)
     for i in 1:size(flux, 2)
-        ccf_1D!(ccf_temp, λ, flux[:,i], plan)
-        ccf_out[:,i] = ccf_temp
+        ccf_1D!(view(ccf_out, :, i), λ, view(flux, :, i), plan)
     end
     return ccf_out
 end
