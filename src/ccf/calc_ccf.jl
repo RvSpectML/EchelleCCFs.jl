@@ -290,7 +290,7 @@ end
 # Returns:
 - 2-d array of size (length(calc_ccf_v_grid(plan)), size(flux, 2))
 """
-function ccf_1D_test(λ::A2, flux::A3,
+function ccf_1D(λ::A2, flux::A3,
                 plan::PlanT = BasicCCFPlan() ) where {
                 T2<:Real, A2<:AbstractArray{T2,1},
                 T3<:Real, A3<:AbstractArray{T3,2},
