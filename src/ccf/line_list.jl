@@ -45,8 +45,8 @@ end
 function BasicLineList2D{T1,T2}(λ::AA1, w::AA1, o::AA2) where {T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:AbstractArray{T2,1} }
     @assert length(λ) == length(w) == length(o)
     @assert length(λ) >= 1
-    @assert 0.0 .<= w .<= 1.0
-    @assert 1 .<= o .<= 200           # arbitrary limit for maximum number of orders
+    @assert all(0.0 .<= w .<= 1.0)
+    @assert all(1 .<= o .<= 200)           # arbitrary limit for maximum number of orders
     BasicLineList2D{eltype(w),typeof(w),eltype{o},typeof(o)}(λ,w,o)
 end
 
@@ -54,9 +54,9 @@ function BasicLineList2D( df::DataFrame )
     @assert hasproperty(df,:lambda)
     @assert hasproperty(df,:weight)
     @assert hasproperty(df,:order)
-    @assert 0.0 .<= df[:weight] .<= 1.0
-    @assert 1 .<= df[:order] .<= 200           # arbitrary limit for maximum number of orders
-    BasicLineList2D{eltype(df[:,:lambda]),typeof(df[:,:weight]),eltype(df[:,:order]),typeof(df[:,:order])}(df[:,:lambda],df[:,:weight],df[:,:order])
+    @assert all(0.0 .<= df[!,:weight] .<= 1.0)
+    @assert all(1 .<= df[!,:order] .<= 200)           # arbitrary limit for maximum number of orders
+    BasicLineList2D{eltype(df[:,:lambda]),typeof(df[:,:weight]),eltype(df[:,:order]),typeof(df[:,:order])}(df[!,:lambda],df[!,:weight],df[!,:order])
 end
 
 function EmptyBasicLineList2D()

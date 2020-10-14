@@ -57,8 +57,6 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
           lower_edge_of_mask_for_line_at_λmax = λ_min(plan.mask_shape,λmax)
           # find the first and last mask entries to use in each chunk
           start_line_idx = searchsortedfirst(view(plan.line_list.λ,start_order_idx:stop_order_idx),upper_edge_of_mask_for_line_at_λmin) + start_order_idx-1
-          #stop_line_idx  = num_lines+1 - searchsortedfirst(view(plan.line_list.λ,num_lines:-1:1),lower_edge_of_mask_for_line_at_λmax,rev=true)
-          #stop_line_idx  = stop_order_idx+1 - searchsortedfirst(view(plan.line_list.λ,stop_order_idx:-1:start_order_idx),lower_edge_of_mask_for_line_at_λmax,rev=true)
           stop_line_idx  = start_order_idx-1 + searchsortedlast(view(plan.line_list.λ,start_order_idx:stop_order_idx),lower_edge_of_mask_for_line_at_λmax)
           if verbose
               flush(stdout)
