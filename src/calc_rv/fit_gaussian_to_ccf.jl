@@ -34,7 +34,7 @@ function MeasureRvFromCCFGaussian(; frac_of_width_to_fit::Real = default_frac_of
                                     init_guess_ccf_σ::Real = default_init_guess_ccf_σ )
     @assert 0.25 <= measure_width_at_frac_depth <= 0.75
     @assert 0.1 <= frac_of_width_to_fit <= 5.0  # TODO: FIgure out appropriate range
-    @assert 1 <= init_guess_ccf_σ <= 30e3
+    @assert -30e3 <= init_guess_ccf_σ <= 30e3
     MeasureRvFromCCFGaussian(frac_of_width_to_fit,measure_width_at_frac_depth,init_guess_ccf_σ)
 end
 

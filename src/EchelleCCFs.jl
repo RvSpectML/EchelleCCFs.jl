@@ -48,6 +48,6 @@ include("calc_rv/calc_rv.jl")
 using .RVFromCCF
 export RVFromCCF
 export measure_rv_from_ccf, measure_rvs_from_ccf
-export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian
+export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian, MeasureRvFromCCFTemplate
 
 end

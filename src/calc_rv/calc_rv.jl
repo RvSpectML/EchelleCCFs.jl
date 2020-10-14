@@ -14,7 +14,7 @@ module RVFromCCF
 import Statistics: mean
 import PDMats: PDiagMat
 #import Polynomials
-import ..RvSpectMLBase: searchsortednearest
+import ..RvSpectMLBase: searchsortednearest, speed_of_light_mps
 
 include("common.jl")
 export AbstractMeasureRvFromCCF
@@ -34,4 +34,8 @@ include("fit_gaussian_to_ccf.jl")
 #import .FitGaussianToCCF: MeasureRvFromCCFGaussian
 export MeasureRvFromCCFGaussian
 
+#include("fit_template_plus_deriv_to_ccf.jl")
+#import .FitTemplateToCCF
+#import .FitTemplateToCCF: MeasureRvFromCCFTemplate
+export MeasureRvFromCCFTemplate
 end # module
