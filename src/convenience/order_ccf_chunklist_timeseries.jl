@@ -19,7 +19,7 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
     only includes lines that reliably appear in that order for all spectra in the chunklist_timeseries.
 """
 function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
-                plan::PlanT = BasicCCFPlan(); verbose::Bool = false, use_pixel_vars::Bool = false  ) where {
+                plan::PlanT = BasicCCFPlan(); verbose::Bool = false ) where {
                     PlanT<:AbstractCCFPlan }
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
@@ -93,7 +93,7 @@ function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
     #  order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan)
   #end
   Threads.@threads for i in 1:nobs
-    order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan_for_chunk, assume_sorted=true, use_pixel_vars=use_pixel_vars)
+    order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan_for_chunk, assume_sorted=true )
   end
 
   return order_ccfs
@@ -113,7 +113,7 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
     only includes lines that reliably appear in that order for all spectra in the chunklist_timeseries.
 """
 function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimeseries,
-                plan::PlanT = BasicCCFPlan(); verbose::Bool = false #=, use_pixel_vars::Bool = false=#  ) where {
+                plan::PlanT = BasicCCFPlan(); verbose::Bool = false ) where {
                     PlanT<:AbstractCCFPlan }
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
@@ -146,7 +146,29 @@ function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimes
           # find the first and last mask entries to use in each chunk
           start_line_idx = searchsortedfirst(view(plan.line_list.λ,start_order_idx:stop_order_idx),upper_edge_of_mask_for_line_at_λmin) + start_order_idx-1
           stop_line_idx  = start_order_idx-1 + searchsortedlast(view(plan.line_list.λ,start_order_idx:stop_order_idx),lower_edge_of_mask_for_line_at_λmax)
+          if verbose
+              flush(stdout)
+              println("extrema(plan.line_list.λ) = ",extrema(plan.line_list.λ) )
+              if (1 <= start_line_idx <= length(plan.line_list.λ)) && (1 <= stop_line_idx <= length(plan.line_list.λ))
+                  println("start_order_idx = ", start_order_idx, "  stop_order_idx = ", stop_order_idx)
+                  println("start_line_idx = ", start_line_idx, " λ= ", plan.line_list.λ[start_line_idx]) #, " order= ", plan.line_list.order[start_line_idx])
+                  println("stop_line_idx = ", stop_line_idx, " λ= ", plan.line_list.λ[stop_line_idx]) #, " order= ", plan.line_list.order[stop_line_idx])
+              end
+              println("upper_edge_of_mask_for_line_at_λmin = ", upper_edge_of_mask_for_line_at_λmin, " Lower_edge_of_mask_for_line_at_λmax = ", lower_edge_of_mask_for_line_at_λmax)
+          end
+
           if (1 <= start_line_idx <= length(plan.line_list.λ)) && (1 <= stop_line_idx <= length(plan.line_list.λ))
+              if verbose && typeof(plan.line_list) <: BasicLineList2D
+                  println("start_line_idx = ", start_line_idx, " λ= ", plan.line_list.λ[start_line_idx], " order= ", plan.line_list.order[start_line_idx])
+                  println("stop_line_idx = ", stop_line_idx, " λ= ", plan.line_list.λ[stop_line_idx], " order= ", plan.line_list.order[stop_line_idx])
+                  println(" Using ", length(start_line_idx:stop_line_idx), " lines for chunk ", chid, " order ", order)
+              end
+              if ! issorted( view(plan.line_list.λ, start_line_idx:stop_line_idx ) )
+                  println("# View is not sorted.  Why?")
+                  for i in start_line_idx:stop_line_idx
+                      println("i= ", i, " λ= ", plan.line_list.λ[i], " order= ", plan.line_list.order[i])
+                  end
+              end
               @assert issorted( view(plan.line_list.λ, start_line_idx:stop_line_idx ) )
               # line_list_for_chunk = BasicLineList(view(plan.line_list.λ,start_line_idx:stop_line_idx), view(plan.line_list.weight,start_line_idx:stop_line_idx) )
               line_list_for_chunk = BasicLineList(view(plan.line_list.λ,start_line_idx:stop_line_idx), view(plan.line_list.weight,start_line_idx:stop_line_idx)  )

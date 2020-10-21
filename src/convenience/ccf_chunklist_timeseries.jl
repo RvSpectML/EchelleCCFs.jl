@@ -19,14 +19,12 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
 """
 function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
                                 plan::PlanT = BasicCCFPlan(); verbose::Bool = false,
-                                calc_ccf_var::Bool = false, use_pixel_vars::Bool = false  ) where { PlanT<:AbstractCCFPlan }
+                                calc_ccf_var::Bool = false  ) where { PlanT<:AbstractCCFPlan }
 
   @assert length(clt) >= 1
   num_lines = length(plan.line_list.λ)
   plan_for_chunk = Vector{BasicCCFPlan}(undef,num_chunks(clt))
-  if use_pixel_vars
-      var_list = Vector{Vector{Float64}}(undef,num_chunks(clt))
-  end
+
   for chid in 1:num_chunks(clt)
       order = clt[1].order[chid]
       if typeof(plan.line_list) <: BasicLineList2D
@@ -93,25 +91,10 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
 
       #create a plan for this chunk that only includes the mask entries we want for this chunk
       plan_for_chunk[chid] = BasicCCFPlan( line_list=line_list_for_chunk, midpoint=plan.v_center, step=plan.v_step, max=plan.v_max, mask_shape=plan.mask_shape )
-      if use_pixel_vars
-          @warn "calc_ccf_chunklist_timeseries using pixel_vars is not yet implemented/tested."
-          # Warning: Orders have consistent length over time, but chunks may not.  So currently only works with full orders
-          var_list[chid] = mapreduce(obsid->clt.chunk_list[obsid].data[chid].var,+, 1:length(clt) )
-          var_list[chid] ./= length(clt)
-          #var_list[chid] = vec(median(mapreduce(obsid->clt.chunk_list[obsid].data[chid].var,hcat, 1:length(clt) ),dims=2))
-            #return var_list
-      end
   end
-  #=
-  if use_pixel_vars
-      return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], var_list, plan_for_chunk,assume_sorted=true, use_pixel_vars=true),hcat, 1:length(clt) )
-  else
-      return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=false),hcat, 1:length(clt) )
-  end
-  =#
   if calc_ccf_var
        #return @threaded mapreduce(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true, use_pixel_vars=true),hcat, 1:length(clt) )
-       list_of_ccf_and_var = @threaded map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true #=, use_pixel_vars=true =#), 1:length(clt) )
+       list_of_ccf_and_var = @threaded map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true ), 1:length(clt) )
        nvs = length(first(list_of_ccf_and_var).ccf)
        ccfs_out = zeros(nvs,length(clt))
        ccf_vars_out = zeros(nvs,length(clt))
@@ -121,6 +104,6 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
        end
        return (ccfs=ccfs_out, ccf_vars=ccf_vars_out)
   else
-       return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true #=, use_pixel_vars=false=# ),hcat, 1:length(clt) )
+       return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk,assume_sorted=true ),hcat, 1:length(clt) )
   end
 end
