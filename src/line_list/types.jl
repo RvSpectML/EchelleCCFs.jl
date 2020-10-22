@@ -31,6 +31,39 @@ end
 function EmptyBasicLineList()
     return BasicLineList{Float64,Array{Float64,1}}(zeros(0),zeros(0))
 end
+
+
+""" A basic line list for passing to compute CCFs.
+Contains (views into) arrays specifying the minimum and maximum wavelength range and weight for each line. """
+struct BasicLineList2D{T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:AbstractArray{T2,1} } <: AbstractLineList
+    λ::AA1
+    weight::AA1
+    order::AA2
+end
+
+""" `BasicLineList( λ, weight )` """
+function BasicLineList2D{T1,T2}(λ::AA1, w::AA1, o::AA2) where {T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:AbstractArray{T2,1} }
+    @assert length(λ) == length(w) == length(o)
+    @assert length(λ) >= 1
+    @assert all(0.0 .<= w .<= 1.0)
+    @assert all(1 .<= o .<= 200)           # arbitrary limit for maximum number of orders
+    BasicLineList2D{eltype(w),typeof(w),eltype{o},typeof(o)}(λ,w,o)
+end
+
+function BasicLineList2D( df::DataFrame )
+    @assert hasproperty(df,:lambda)
+    @assert hasproperty(df,:weight)
+    @assert hasproperty(df,:order)
+    @assert all(0.0 .<= df[!,:weight] .<= 1.0)
+    @assert all(1 .<= df[!,:order] .<= 200)           # arbitrary limit for maximum number of orders
+    BasicLineList2D{eltype(df[:,:lambda]),typeof(df[:,:weight]),eltype(df[:,:order]),typeof(df[:,:order])}(df[!,:lambda],df[!,:weight],df[!,:order])
+end
+
+function EmptyBasicLineList2D()
+    return BasicLineList2D{Float64,Array{Float64,1},Int32,Array{Int32,1}}(zeros(0),zeros(0), zeros(Int32,0) )
+end
+
+
 #=  Not fully implemented/tested yet
 """ A line list for passing to compute CCFs with variable line widths.
 Contains (views into) arrays specifying the minimum and maximum wavelength range and weight for each line. """
