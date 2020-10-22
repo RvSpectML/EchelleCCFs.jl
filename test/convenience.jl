@@ -47,7 +47,8 @@ using Test
         chunklist = ChunkList([chunk,chunk,chunk],[1,2,3])
         ccf = calc_ccf_chunklist(chunklist, fill(ccfpl,3) )
         order_ccf = calc_order_ccfs_chunklist(chunklist, fill(ccfpl,3)  )
-        @test all(ccf .== sum(order_ccf,dims=2))
+        num_lines = 6
+        @test all(ccf .≈ sum(order_ccf,dims=2).*num_lines)
     end
 
     #= Not working
