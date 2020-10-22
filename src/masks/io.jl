@@ -5,8 +5,6 @@ Author: Eric Ford
 Created: August 2020
 """
 
-using DataFrames, CSV
-
 """
     Read line list in ESPRESSO csv format.
 ESPRESSO format: lambda and weight.
