@@ -22,13 +22,10 @@ end
    VALD format: lambda_lo, lambdaa_hi and depth.
 """
 function read_linelist_vald(fn::String)
-    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda_lo","lambda_hi","depth"])
-    @assert hasproperty(df, :lambda_lo)
-    @assert hasproperty(df, :lambda_hi)
+    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
+    @assert hasproperty(df, :lambda)
     @assert hasproperty(df, :depth)
-    df[!,:lambda_lo] .= λ_air_to_vac.(df[!,:lambda_lo])
-    df[!,:lambda_hi] .= λ_air_to_vac.(df[!,:lambda_hi])
-    df[!,:lambda] = sqrt.(df[!,:lambda_lo].*df[!,:lambda_hi])
+    df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
     df[!,:weight] = df[!,:depth] # TODO: Decide out what we want to do about tracking depths and weights sepoarately
     return df
 end
