@@ -11,9 +11,12 @@ Refactored, optimized and generalized by Eric Ford
 module EchelleCCFs
 
 import RvSpectMLBase
+import RvSpectMLBase: AbstractSpectra, AbstractSpectra1D, AbstractSpectra2D
 import RvSpectMLBase: AbstractChunkOfSpectrum, AbstractChunkList, AbstractChunkListTimeseries
 import RvSpectMLBase: AbstractInstrument
 import RvSpectMLBase: num_chunks
+
+using DataFrames, Query, CSV
 
 #import Polynomials
 
@@ -34,6 +37,10 @@ include("masks/masks.jl")
 include("mask_shapes/mask_shapes.jl")
 # exports its own types
 
+include("line_list/line_list.jl")
+export AbstractLineList, BasicLineList
+export assign_lines_to_orders, calc_snr_weights_for_lines!
+
 # default parameters for CCF plans
 const default_v_center = 0.0    # m/s
 const default_v_step = 250.0    # m/s
@@ -44,10 +51,20 @@ const default_v_range_no_mask_change = default_v_max # m/s
 include("ccf/ccf.jl")
 # exports its own types/functions
 
+include("convenience/convenience.jl")
+export calc_ccf_chunk, calc_ccf_chunk!
+export calc_ccf_and_var_chunk, calc_ccf_and_var_chunk!
+export calc_ccf_chunklist #, calc_ccf_chunklist!
+export calc_ccf_and_var_chunklist #, calc_ccf_and_var_chunklist!
+export calc_order_ccfs_chunklist, calc_order_ccfs_chunklist!
+export calc_order_ccf_and_vars_chunklist, calc_order_ccf_and_vars_chunklist!
+export calc_ccf_chunklist_timeseries
+export calc_ccf_and_var_chunklist_timeseries
+
 include("calc_rv/calc_rv.jl")
 using .RVFromCCF
 export RVFromCCF
 export measure_rv_from_ccf, measure_rvs_from_ccf
-export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian
+export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian, MeasureRvFromCCFTemplate
 
 end

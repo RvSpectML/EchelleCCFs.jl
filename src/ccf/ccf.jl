@@ -5,8 +5,6 @@ const default_v_max = 15.0e3    # m/s
 const default_v_width = 410.0   # m/s
 const default_v_range_no_mask_change = default_v_max # m/s
 
-include("line_list.jl")
-export AbstractLineList, BasicLineList
 
 include("plan.jl")
 export AbstractCCFPlan, BasicCCFPlan
@@ -15,6 +13,7 @@ export calc_ccf_v_grid, calc_length_ccf_v_grid
 include("calc_ccf.jl")
 export ccf_1D, ccf_1D!
 
+#=
 include("convenience/convenience.jl")
 export calc_ccf_chunk, calc_ccf_chunk!
 export calc_ccf_and_var_chunk, calc_ccf_and_var_chunk!
@@ -24,6 +23,7 @@ export calc_order_ccfs_chunklist, calc_order_ccfs_chunklist!
 export calc_order_ccf_and_vars_chunklist, calc_order_ccf_and_vars_chunklist!
 export calc_ccf_chunklist_timeseries
 export calc_ccf_and_var_chunklist_timeseries
+=#
 
 # Will soon comment out to reduce precompilation time
 #include("calc_ccf_old.jl")

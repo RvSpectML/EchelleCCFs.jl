@@ -63,9 +63,9 @@ function measure_rvs_from_ccf(vels::A1, ccf::A2; alg::AlgT=MeasureRvFromCCFGauss
     rvs = zeros(nobs)
     σ_rvs = zeros(nobs)
     for i in 1:nobs
-        (rv, σ_rv) = measure_rv_from_ccf(vels, view(ccf,:,i), alg=alg)
-        rvs[i] = rv
-        σ_rvs[i] = σ_rv
+        result = measure_rv_from_ccf(vels, view(ccf,:,i), alg=alg)
+        rvs[i] = result.rv
+        σ_rvs[i] = result.σ_rv
     end
     return (rvs=rvs, σ_rvs=σ_rvs)
 end
@@ -76,9 +76,9 @@ function measure_rvs_from_ccf(vels::A1, ccf::A2, ccf_var::A3; alg::AlgT=MeasureR
     rvs = zeros(nobs)
     σ_rvs = zeros(nobs)
     for i in 1:nobs
-        (rv, σ_rv) = measure_rv_from_ccf(vels, view(ccf,:,i), view(ccf_var,:,i), alg=alg)
-        rvs[i] = rv
-        σ_rvs[i] = σ_rv
+        result = measure_rv_from_ccf(vels, view(ccf,:,i), view(ccf_var,:,i), alg=alg)
+        rvs[i] = result.rv
+        σ_rvs[i] = result.σ_rv
     end
     return (rvs=rvs, σ_rvs=σ_rvs)
 end
