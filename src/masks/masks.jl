@@ -55,10 +55,8 @@ end
    VALD format: `lambda_lo`, `lambdaa_hi` and `depth`.
 """
 function read_mask_vald(fn::String; calcΔ::CCWT = default_calc_chunk_width) where { CCWT<:AbstractCalcChunkWidth }
-    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda_lo","lambda_hi","depth"])
-    df[!,:lambda_lo] .= λ_air_to_vac.(df[!,:lambda_lo])
-    df[!,:lambda_hi] .= λ_air_to_vac.(df[!,:lambda_hi])
-    df[!,:lambda] = sqrt.(df[!,:lambda_lo].*df[!,:lambda_hi])
+    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
+    df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
     local Δ = calcΔ.(df[!,:lambda])
     @assert all(Δ.>0)
     df[!,:lambda_lo] = df[!,:lambda]./(1 .+ Δ)
