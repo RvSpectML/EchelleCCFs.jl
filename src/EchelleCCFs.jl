@@ -17,6 +17,8 @@ import RvSpectMLBase: AbstractInstrument
 import RvSpectMLBase: num_chunks
 
 using DataFrames, Query, CSV
+using LinearAlgebra, StatsBase, Statistics
+using LsqFit  # temporarily using for fitting ccf covariance model in src/calc_rv/ccf_covar_model.jl
 
 #import Polynomials
 
