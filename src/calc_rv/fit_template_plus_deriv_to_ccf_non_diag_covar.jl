@@ -22,7 +22,17 @@ struct MeasureRvFromCCFTemplateNonDiagCovar <: AbstractMeasureRvFromCCF
 	v_idx_to_fit::UnitRange{Int64}
 end
 
-# depends on numerical_deriv currently in fit_template_plus_deriv_to_ccf
+#=
+# Todo: Replace with version in RvSpectMLBase or a (brute force?/temporal?) GP?
+function numerical_deriv( x::AA1, y::AA2 )   where { T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Real, AA2<:AbstractArray{T2,1}  }
+	@assert length(x) == length(y)
+	dydx = zeros(size(y))
+	dydx[1] = (y[2]-y[1])/(x[2]-x[1])
+	dydx[2:end-1] .= (y[3:end].-y[1:end-2])./(x[3:end].-x[1:end-2])
+	dydx[end] = (y[end]-y[end-1])/(x[end]-x[end-1])
+	return dydx
+end
+=#
 
 """
 Construct functor to estimate RV based on the CCF.
@@ -59,18 +69,16 @@ function set_mean_var(in::MeasureRvFromCCFTemplateNonDiagCovar, mean_var::Real)
 end
 
 function (mrv::MeasureRvFromCCFTemplateNonDiagCovar)(vels::A1, ccf::A2, ccf_var::A3, ccf_covar::A4  ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,2}  }
-        println("Hello 2")
 		@assert all(vels .== mrv.v_grid)  # Could relax this, but keep it simple for now
 		# fit only the part near the minimum of the CCF
 		deriv = view(mrv.deriv,mrv.v_idx_to_fit)
 		diag_scale_factor = mean(ccf_var)-mrv.mean_var
-		covar = view(ccf_covar,mrv.v_idx_to_fit,mrv.v_idx_to_fit) + diag_scale_factor*mrv.near_diag_covar
+		covar = view(ccf_covar,mrv.v_idx_to_fit,mrv.v_idx_to_fit) + diag_scale_factor*view(mrv.near_diag_covar,mrv.v_idx_to_fit,mrv.v_idx_to_fit)
         # find the min and fit only the part near the minimum of the CCF
 		ccf_inv_covar_times_deriv = covar \ deriv
 		denom = deriv' * ccf_inv_covar_times_deriv
 		# Minus sign due to weird convention of defining CCF to look like an absorption line (e.g., 1 at Inf minimum at best fit velocity)
 		rv = -(view(ccf,mrv.v_idx_to_fit) .- view(mrv.template,mrv.v_idx_to_fit) )' * ccf_inv_covar_times_deriv
-        denom = sum( abs2.(deriv) ./ var )
 		rv *= (1/denom)
 		σ_rv = sqrt(1/denom)
 		return (rv=rv, σ_rv=σ_rv)
