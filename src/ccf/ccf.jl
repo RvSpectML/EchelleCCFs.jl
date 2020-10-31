@@ -13,6 +13,9 @@ export calc_ccf_v_grid, calc_length_ccf_v_grid
 include("calc_ccf.jl")
 export ccf_1D, ccf_1D!
 
+include("ccf_template.jl")
+export calc_normalized_ccfs, calc_ccf_template
+
 #=
 include("convenience/convenience.jl")
 export calc_ccf_chunk, calc_ccf_chunk!

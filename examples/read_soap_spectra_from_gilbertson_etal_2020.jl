@@ -4,7 +4,7 @@ Pkg.activate(joinpath(pkgdir(EchelleCCFs),"examples"))
 using EchelleCCFs
 using HDF5, FileIO
 
-include("../deps/download_soap_example.jl")
+include("../deps/download_soap_example_from_gilbertson_etal_2020.jl")
 
 function read_soap_output_gilbertson_ford_dumuseque_2020(filename::String, obs_idx::Integer)
     local time, λ, flux
