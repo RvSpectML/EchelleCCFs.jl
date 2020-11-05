@@ -46,6 +46,11 @@ function measure_rv_from_ccf(vels::A1, ccf::A2, ccf_var::A3 ; alg::AlgT=MeasureR
     return alg(vels,ccf,ccf_var)
 end
 
+function measure_rv_from_ccf(vels::A1, ccf::A2, ccf_var::A3 ; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
+                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,2}, AlgT<:AbstractMeasureRvFromCCF }
+    return alg(vels,ccf,ccf_var)
+end
+
 function measure_rv_from_ccf(vels::A1, ccf::A2, ccf_var::A3, covar_base::A4 ; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
                 T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,2}, AlgT<:AbstractMeasureRvFromCCF }
     return alg(vels,ccf,ccf_var,covar_base)
@@ -88,6 +93,18 @@ function measure_rvs_from_ccf(vels::A1, ccf::A2, ccf_var::A3; alg::AlgT=MeasureR
     return (rvs=rvs, σ_rvs=σ_rvs)
 end
 
+function measure_rvs_from_ccf(vels::A1, ccf::A2, ccf_covar::A3; alg::AlgT=MeasureRvFromCCFGaussian() )  where {
+                T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,2}, T3<:Real, A3<:AbstractArray{T3,3}, AlgT<:AbstractMeasureRvFromCCF }
+    nobs = size(ccf,2)
+    rvs = zeros(nobs)
+    σ_rvs = zeros(nobs)
+    for i in 1:nobs
+        result = measure_rv_from_ccf(vels, view(ccf,:,i), view(ccf_covar,:,:,i), alg=alg)
+        rvs[i] = result.rv
+        σ_rvs[i] = result.σ_rv
+    end
+    return (rvs=rvs, σ_rvs=σ_rvs)
+end
 
 function measure_rvs_from_ccf(vels::A1, ccf::A2, ccf_var::A3, covar_base::A4; alg::AlgT )  where {
                 T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,2}, T3<:Real, A3<:AbstractArray{T3,2}, T4<:Real, A4<:AbstractArray{T4,2}, AlgT<:AbstractMeasureRvFromCCF }
