@@ -291,10 +291,10 @@ function ccf_1D(λ::A2, flux::A3, var::A4,
         return (ccf=ccf_out, ccf_var=ccf_covar_out)
     end
     if calc_ccf_covar
-        ccf_1D!(ccf_out, ccf_var_out, λ, flux, var, plan, ccf_var_scale=ccf_var_scale, calc_covar_terms=calc_covar_terms )
+        ccf_1D!(ccf_out, ccf_covar_out, λ, flux, var, plan, ccf_var_scale=ccf_var_scale, calc_covar_terms=calc_covar_terms )
         return (ccf=ccf_out, ccf_covar=ccf_covar_out)
     else
-        ccf_1D!(ccf_out, ccf_var_out, λ, flux, var, plan, ccf_var_scale=ccf_var_scale )
+        ccf_1D!(ccf_out, ccf_covar_out, λ, flux, var, plan, ccf_var_scale=ccf_var_scale )
         return (ccf=ccf_out, ccf_var=ccf_covar_out)
     end
 end
