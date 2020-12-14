@@ -1,7 +1,7 @@
 name = "EchelleCCFs"
 uuid = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
 authors = ["Eric Ford"]
-version = "0.1.5"
+version = "0.1.6"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -31,7 +31,7 @@ Optim = "1.2"
 PDMats = "0.10"
 QuadGK = "2.4"
 Query = "1"
-RvSpectMLBase = "0.1"
+RvSpectMLBase = "0.1.6"
 SpecialFunctions = "0.10, 1.0, 1.1"
 StaticArrays = "0.12, 1.0"
 StatsBase = "0.33"
