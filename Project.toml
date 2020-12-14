@@ -22,7 +22,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 ThreadedIterables = "11d239b0-c0b9-11e8-1935-d5cfa53abb03"
 
 [compat]
-CSV = "0.7"
+CSV = "0.7, 0.8"
 DataFrames = "0.21"
 ForwardDiff = "0.10"
 LsqFit = "0.11"
