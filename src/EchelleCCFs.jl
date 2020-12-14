@@ -69,4 +69,7 @@ export RVFromCCF
 export measure_rv_from_ccf, measure_rvs_from_ccf
 export MeasureRvFromMinCCF, MeasureRvFromCCFCentroid, MeasureRvFromCCFQuadratic, MeasureRvFromCCFGaussian, MeasureRvFromCCFTemplate
 
+include("io/write_ccf_fits.jl")
+export write_ccf_fits, write_each_ccf_fits
+
 end
