@@ -44,7 +44,7 @@ function integrate(m::TopHatCCFMask, v_lo::Real,v_hi::Real)
     #0.5*(v_hi-v_lo)/m.half_width * (1+m.half_width/speed_of_light_mps)/(1+(m.half_width/speed_of_light_mps)^2/2)
 end
 
-""" Functor for returning 1 for any Δv <= width.  """
+""" Functor for returning constant for any Δv <= width.  """
 function (m::TopHatCCFMask)(Δv::Real)
     # TODO: Change once implement generic CCF mask shapes (currently, I don't understand why the normalization differs for the two)
     #return abs2(Δv)<=abs2(m.half_width) ? 0.5/m.half_width : zero(Δv)  # Old for project_mask that assumes tophat
