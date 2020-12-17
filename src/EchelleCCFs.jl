@@ -20,6 +20,8 @@ using DataFrames, Query, CSV
 using LinearAlgebra, StatsBase, Statistics
 using LsqFit  # temporarily using for fitting ccf covariance model in src/calc_rv/ccf_covar_model.jl
 
+using FITSIO, Pkg, Dates, OrderedCollections # For writing CCFs to FITS files
+
 #import Polynomials
 
 include("physics.jl")
