@@ -7,8 +7,9 @@ function make_ccf_fits_header(metadata::AbstractDict; line_list_filename::Union{
             blue_ord::Union{Nothing,Int64} = 118, red_ord::Union{Nothing,Int64} = 89,  # TODO: WARNING: Hardwired
             mask_shape::Union{Nothing,String} = "tophat", barycor::Union{Nothing,String} = "chromatic", # TODO: WARNING: Hardwired
             ccord::Union{Nothing,Bool} = false, blazenorm::Union{Nothing,Bool} = false, contnorm::Union{Nothing,Bool} = true,
-            div_tell::Union{Nothing,Bool} = false, rawnorm::Union{Nothing,Bool} = nothing, plate_scale::Union{Nothing,Float64} = 1.0,
+            div_tell::Union{Nothing,Bool} = false, rawnorm::Union{Nothing,Bool} = nothing, plate_scale::Union{Nothing,Float64} = nothing,
             )
+    # TODO: WARNING: several parameters, e.g., BLUE_ORD, RED_ORD, WINDOW, BARYCOR, PLATESCL, given default value above instead of defaulting to outputing nothing
     header_dict = OrderedDict{String,Tuple{Any,String}}("VERSION"=>("penn.state." * string(Pkg.project().version), string(Pkg.project().name) * " code version"))
     # Add version info for packages used
     deps = Pkg.dependencies()
@@ -29,28 +30,26 @@ function make_ccf_fits_header(metadata::AbstractDict; line_list_filename::Union{
         header_dict["MASK"] = (line_list_filename, "CCF mask linelist used")
     end
     if haskey(metadata,:expcount)
-        header_dict["EXPCOUNT"] = (metadata[:expcount], "check what to write here")
+        header_dict["EXPCOUNT"] = (metadata[:expcount], "Exposure meter counts")
     end
-    # Skipped: SNR, CHI2
+    # TODO: Skipped: SNR, CHI2 from CCF FITS headers
     if !isnothing(v)
-        header_dict["V"] = (v, "check what to write here")
+        header_dict["V"] = (v, "Fitted velocity in cm/s")
     end
     if !isnothing(e_v)
-        header_dict["E_V"] = (e_v, "check what to write here")
+        header_dict["E_V"] = (e_v, "Error of velocity in cm/s")
     end
-    # TODO: WARNING: BLUE_ORD, RED_ORD and WINDOW given default value instead of defaulting to outputing nothing
     if !isnothing(blue_ord)
-        header_dict["BLUE_ORD"] = (blue_ord, "check what to write here")
+        header_dict["BLUE_ORD"] = (blue_ord, "Bluest echelle order in CCF")
     end
     if !isnothing(red_ord)
-        header_dict["RED_ORD"] = (red_ord, "check what to write here")
+        header_dict["RED_ORD"] = (red_ord, "Reddest echelle order in CCF")
     end
     if !isnothing(mask_shape)
         header_dict["WINDOW"] = (mask_shape, "Shape of CCF mask used in CCF")
     end
-    # TODO: WARNING: BARYCOR hard-wired for now
     if !isnothing(barycor)
-        header_dict["BARYCOR"] = (barycor, "check what to write here")
+        header_dict["BARYCOR"] = (barycor, "Type of barycentric correction")
     end
     if haskey(metadata,:airmass)
         header_dict["AIRMASS"] = (metadata[:airmass], "Airmass of exposure")
@@ -65,7 +64,7 @@ function make_ccf_fits_header(metadata::AbstractDict; line_list_filename::Union{
         header_dict["WAVE_CAL"] = (metadata[:wavecal], "Wavelength calibration used when computing CCF")
     end
     if !isnothing(ccord)
-        header_dict["CCOR"] = (ccord, "check what to write here")
+        header_dict["CCOR"] = (ccord, "HARPS_style colour correction")
     end
     if !isnothing(blazenorm)
         header_dict["BLAZE"] = (blazenorm, "Pixels weighted by blaze in CCF")
@@ -73,14 +72,14 @@ function make_ccf_fits_header(metadata::AbstractDict; line_list_filename::Union{
     if !isnothing(contnorm)
         header_dict["CONTNORM"] = (contnorm, "Continuum normalized spectrum in CCF")
     end
-    # Skipped SUB_CONT
-    header_dict["SUB_CONT"] = (false, "check what to write here")
+    # TODO: Warning: Hardcoded SUB_CONT
+    header_dict["SUB_CONT"] = (false, "Continuum subtracted before running CCF")
     if !isnothing(div_tell)
         header_dict["DIV_TELL"] = (div_tell, "Tellurics divided before CCF")
     end
     # TODO: WARNING: PLATESCL hard-wired for now
     if !isnothing(plate_scale)
-        header_dict["PLATESCL"] = (plate_scale, "check what to write here")
+        header_dict["PLATESCL"] = (plate_scale, "CCF platescale")
     end
     #=
     # Added some that I thought might be useful to have

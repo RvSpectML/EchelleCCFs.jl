@@ -54,7 +54,8 @@ function calc_snr_weights_for_lines!(line_list::DataFrame, spectra::AAS ; v_cent
   end
   snr_weights = vec(median(snr_list,dims=1)).^2
   sum_snr_weights = sum(snr_weights)
-  snr_weights ./= sum_snr_weights
+  sum_weight_inputs = sum(line_list[!,:weight])
+  snr_weights .*= sum_weight_inputs/sum_snr_weights
   line_list[!,:weight_snr] .= snr_weights
   #=
   line_list[!,:exp_sigma_rv] .= vec(median(exp_sigma_rv,dims=1))
@@ -65,6 +66,7 @@ function calc_snr_weights_for_lines!(line_list::DataFrame, spectra::AAS ; v_cent
   line_list[!,:weight_theory] .= exp_σ_rv_weights #.* snr_weights
   #line_list[!,:weight_theory] ./= sum(line_list[!,:weight_theory])
   =#
+
   line_list[!,:weight_input] = deepcopy(line_list[!,:weight])
   #line_list[!,:weight] = line_list[!,:weight_theory]
   line_list[!,:weight] .*= snr_weights
