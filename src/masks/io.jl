@@ -10,22 +10,26 @@ Created: August 2020
 ESPRESSO format: lambda and weight.
 Warning: ESPRESSO masks don't provide line depth and sometimes include one entry for a blend of lines.
 """
-function read_linelist_espresso(fn::String)
+function read_linelist_espresso(fn::String; airToVac::Bool = true)
     local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","weight"],delim=' ',ignorerepeated=true)
     @assert hasproperty(df, :lambda)
     @assert hasproperty(df, :weight)
-    df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
+    if airToVac
+        df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
+    end
     return df
 end
 
 """ Read line list in VALD csv format.
    VALD format: lambda_lo, lambdaa_hi and depth.
 """
-function read_linelist_vald(fn::String)
+function read_linelist_vald(fn::String; airToVac::Bool = true)
     local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
     @assert hasproperty(df, :lambda)
     @assert hasproperty(df, :depth)
-    df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
+    if airToVac
+        df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
+    end
     df[!,:weight] = df[!,:depth] # TODO: Decide out what we want to do about tracking depths and weights sepoarately
     return df
 end
