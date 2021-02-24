@@ -18,8 +18,8 @@ import RvSpectMLBase: num_chunks
 
 using DataFrames, Query, CSV
 using LinearAlgebra, StatsBase, Statistics
+using NaNMath # for computing CCFs with NaNs in flux
 using LsqFit  # temporarily using for fitting ccf covariance model in src/calc_rv/ccf_covar_model.jl
-
 using FITSIO, Pkg, Dates, OrderedCollections # For writing CCFs to FITS files
 
 #import Polynomials

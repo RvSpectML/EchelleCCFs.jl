@@ -46,7 +46,7 @@ function ccf_1D!(ccf_out::A1, λ::A2, flux::A3,
         project_mask!(projection_workspace, λ, plan, shift_factor=doppler_factor)
 
         # compute the ccf value at the current velocity shift
-        ccf_out[i] = sum(flux .* projection_workspace)
+        ccf_out[i] = plan.allow_nans ? NaNMath.sum(flux .* projection_workspace) : sum(flux .* projection_workspace)
     end
     return ccf_out
 end
@@ -96,8 +96,9 @@ function ccf_1D!(ccf_out::A1, ccf_var_out::A1, λ::A2, flux::A3, var::A4,
         project_mask!(projection_workspace, λ, plan, shift_factor=doppler_factor)
 
         # compute the ccf value at the current velocity shift
-        ccf_out[i] = sum(flux .* projection_workspace)
-        ccf_var_out[i] = ccf_var_scale * sum(var .* projection_workspace.^2)
+        ccf_out[i] = plan.allow_nans ? NaNMath.sum(flux .* projection_workspace) : sum(flux .* projection_workspace)
+        ccf_var_out[i] = plan.allow_nans ? NaNMath.sum(var .* projection_workspace.^2) : sum(var .* projection_workspace.^2)
+        ccf_var_out[i] *= ccf_var_scale
     end
     return (ccf=ccf_out, ccf_var=ccf_var_out)
 end
@@ -153,17 +154,17 @@ function ccf_1D!(ccf_out::A1, ccf_covar_out::A2, λ::A3, flux::A4, var::A5,
         project_mask!(view(projection_workspace, :, :, i), λ, plan, shift_factor=doppler_factor)
 
         # compute the ccf value at the current velocity shift
-        ccf_out[i] = sum(flux .* view(projection_workspace,:,1,i) )
+        ccf_out[i] = plan.allow_nans ? NaNMath.sum(flux .* view(projection_workspace,:,1,i) ) : sum(flux .* view(projection_workspace,:,1,i) )
         # computing the variance term of CCF covar's diagonal entries moved to separate loop for memory access locality
-        # ccf_covar_out[i,i] = sum(var .* view(projection_workspace,:,1,i).^2)
+        # ccf_covar_out[i,i] = plan.allow_nans ? NaNMath.sum(var .* view(projection_workspace,:,1,i).^2) : sum(var .* view(projection_workspace,:,1,i).^2)
     end
     # Add variance terms for off-diagonal terms of CCF covar
     for i in 1:num_vels
         for j in i:num_vels
             if i == j
-                ccf_covar_out[i,i] = sum(var .* view(projection_workspace,:,1,i).^2)
+                ccf_covar_out[i,i] = plan.allow_nans ? NaNMath.sum(var .* view(projection_workspace,:,1,i).^2) : sum(var .* view(projection_workspace,:,1,i).^2)
             else  # i != j
-                covar_term = sum(var .* view(projection_workspace,:,1,i) .* view(projection_workspace,:,1,j) )
+                covar_term = plan.allow_nans ? NaNMath.sum(var .* view(projection_workspace,:,1,i) .* view(projection_workspace,:,1,j) ) : sum(var .* view(projection_workspace,:,1,i) .* view(projection_workspace,:,1,j) )
                 ccf_covar_out[i,j] = covar_term
                 ccf_covar_out[j,i] = covar_term
             end  # if i== j ... else ...

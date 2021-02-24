@@ -1,7 +1,7 @@
 name = "EchelleCCFs"
 uuid = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
 authors = ["Eric Ford"]
-version = "0.1.8"
+version = "0.1.9"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -11,6 +11,7 @@ FITSIO = "525bcba6-941b-5504-bd06-fd0dc1a4d2eb"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
+NaNMath = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 NamedTupleTools = "d9ec5142-1e00-5aa0-9d6a-321866360f50"
 Optim = "429524aa-4258-5aef-a3af-852621145aeb"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"

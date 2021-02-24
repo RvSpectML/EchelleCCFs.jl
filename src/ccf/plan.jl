@@ -15,13 +15,14 @@ struct BasicCCFPlan{MST<:AbstractCCFMaskShape, LLT<:AbstractLineList} <: Abstrac
     v_range_no_mask_change::Float64
     mask_shape::MST
     line_list::LLT
+    allow_nans::Bool
 
     function BasicCCFPlan(midpoint::Real,step::Real, max::Real, range_no_mask_change::Real,
-                          mask_shape::MST, line_list::LLT ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
+                          mask_shape::MST, line_list::LLT, allow_nans::Bool ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
         @assert 1.0e3 <= max <=100.0e3    # Reasonable range m/s, designed to prevent mistakes
         @assert 1 < step < 1000           # Reasonable range m/s
         #@assert abs(midpoint) < max      # Not true for SOAP simulations to ESPRESSO G2 mask
-        new{MST,LLT}(midpoint, step, max, range_no_mask_change, mask_shape, line_list)
+        new{MST,LLT}(midpoint, step, max, range_no_mask_change, mask_shape, line_list, allow_nans)
     end
 
 end
@@ -34,8 +35,8 @@ end
 """
 function BasicCCFPlan(;midpoint::Real=default_v_center, step::Real=default_v_step, max::Real=default_v_max,
                        range_no_mask_change::Real=max, mask_shape::MST,
-                       line_list::LLT ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
-    BasicCCFPlan(midpoint, step, max, range_no_mask_change, mask_shape, line_list)
+                       line_list::LLT, allow_nans::Bool = true ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
+    BasicCCFPlan(midpoint, step, max, range_no_mask_change, mask_shape, line_list, allow_nans)
 end
 
 """ `calc_ccf_v_grid( plan )`
