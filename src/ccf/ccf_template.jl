@@ -25,6 +25,17 @@ function calc_normalized_ccfs( v_grid::A1, ccfs::A2; v_mid::Real, dv_min::Real =
     return ccfs_out
 end
 
+function calc_normalized_ccfs( v_grid::A1, ccfs::A2, ccf_vars::A3; v_mid::Real, dv_min::Real = RvSpectMLBase.max_bc, dv_max::Real = Inf ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,2}, T3<:Real, A3<:AbstractArray{T3,2}  }
+    norms = fit_ccf_normalizations(v_grid,ccfs,v_mid=v_mid,dv_min=dv_min, dv_max=dv_max)
+    ccfs_out = copy(ccfs)
+    ccf_vars_out = copy(ccf_vars)
+    for i in 1:size(ccfs,2)
+        ccfs_out[:,i] ./= norms[i]
+        ccf_vars_out[:,i] ./= norms[i]^2
+    end
+    return (ccfs=ccfs_out, ccf_vars=ccf_vars_out)
+end
+
 """ calc_normalized_ccfs( ccfs )
 Normalizes each spectrum by its maximum value.
 """
