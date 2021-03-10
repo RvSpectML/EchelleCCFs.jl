@@ -84,5 +84,5 @@ function mask_with_increased_fwhm(m::GaussianMixtureCCFMask, Δfwhm::Real )
     fwhm_orig = 2*sqrt(log(2)) .* m.σ_sqrt2
     fwhm_new = sqrt.(fwhm_orig.^2 .+ Δfwhm^2)
     σ_new = 0.5 .* fwhm_new./sqrt(2*log(2))
-    function GaussianMixtureCCFMask(m.weight, σ_new, m.truncation_Δv, v_offset=m.v_offset )
+    return GaussianMixtureCCFMask(m.weight, σ_new, m.truncation_Δv, v_offset=m.v_offset )
 end
