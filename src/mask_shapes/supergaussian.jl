@@ -57,3 +57,24 @@ function (m::SuperGaussianCCFMask)(Δv::Real)
         return m.normalization*exp(-((Δv/m.σ_sqrt2)^2)^m.power)
     end
 end
+
+function SuperGaussianCCFMask(σ::Real, p::Real, w::Real=2 )
+    @assert 0 < σ <= 300000   # 300km/s is arbitrary choice for an upper limit
+    @assert 1 <= p <= 2
+    @assert 0 < w <= 4
+    function integrand(x)
+        exp(-(0.5*(x/σ)^2)^p)
+    end
+    integral = quadgk(integrand, -w*σ, w*σ)[1]
+    norm = 1.0/integral
+    new(σ*sqrt(2.0),p,σ*w,norm)
+end
+
+function mask_with_increased_fwhm(m::SuperGaussianCCFMask, Δfwhm::Real )
+    # WARNING: Haven't checked how good of an approximation this is
+    σ = m.σ_sqrt2/sqrt(2)
+    fwhm_orig = σ * sqrt(8 * log(2)^(1/m.power))
+    fwhm_new = sqrt(fwhm_orig^2 + Δfwhm^2)
+    σ_new = fwhm_new/sqrt(8 * log(2)^(1/m.power))
+    return SuperGaussianCCFMask(σ_new, m.power, m.half_width_truncation * (σ_new * sqrt(2) / σ_sqrt2) )
+end

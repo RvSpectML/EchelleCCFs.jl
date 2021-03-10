@@ -8,7 +8,7 @@ Created: August 2020
 abstract type AbstractCCFPlan end
 
 """ Basic plan for computing the CCF roughly between v_center-v_max and v_center+v_max with step size v_step. """
-struct BasicCCFPlan{MST<:AbstractCCFMaskShape, LLT<:AbstractLineList} <: AbstractCCFPlan
+mutable struct BasicCCFPlan{MST<:AbstractCCFMaskShape, LLT<:AbstractLineList} <: AbstractCCFPlan
     v_center::Float64
     v_step::Float64
     v_max::Float64
@@ -54,4 +54,20 @@ Return number of points in the velocity grid (without needing to create the rang
 function calc_length_ccf_v_grid(p::PlanT where PlanT<:BasicCCFPlan )
     n = ceil(Int, p.v_max/p.v_step)
     length=2*n+1
+end
+
+function get_mask_shape(p::PlanT ) where { PlanT<:BasicCCFPlan }
+    return p.mask_shape
+end
+
+function set_mask_shape!(p::PlanT, m::MST ) where { PlanT<:BasicCCFPlan, MST<:AbstractCCFMaskShape }
+    p.mask_shape = m
+    return p
+end
+
+function increase_mask_fwhm!(p::PlanT, Δfwhm::Real ) where { PlanT<:BasicCCFPlan }
+    if Δfwhm > 0
+        set_mask_shape!(p, mask_with_increased_fwhm(get_mask_shape(p),Δfwhm) )
+    end
+    return p
 end

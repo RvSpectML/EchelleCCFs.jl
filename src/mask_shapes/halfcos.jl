@@ -10,12 +10,11 @@ Mask weights are stored separately in a line list.
 """
 struct CosCCFMask <: AbstractCCFMaskShape
     half_width::Float64
-    # normalization::Float64 #  unneeded since norm=pi/(2*half_width_truncation)
 
     """ CosCCFMask( full_width ) """
     function CosCCFMask( w::Real )
         @assert 100 <= w <= 300000   # 0.1 and 300km/s are arbitrary choices for an upper limit
-        new(w)
+        new(w/2)
     end
 
 end
@@ -23,7 +22,7 @@ end
 """ `CosCCFMask( inst  )` """
 function CosCCFMask(inst::AbstractInstrument; scale_factor::Real = 1)
     w = scale_factor * default_ccf_mask_v_width(inst)
-    CosCCFMask(w/2)
+    CosCCFMask(w)
 end
 
 λ_min(m::CosCCFMask,λ::Real) = λ/calc_doppler_factor(m.half_width)
@@ -41,4 +40,10 @@ function (m::CosCCFMask)(Δv::Real)
     else
         return cos(0.5*π*Δv/m.half_width)*π/(4*m.half_width)
     end
+end
+
+
+function mask_with_increased_fwhm(m::CosCCFMask, Δfwhm::Real )
+    width = 2*m.half_width+Δfwhm
+    return CosCCFMask(width)
 end

@@ -27,6 +27,7 @@ struct GaussianCCFMask <: AbstractCCFMaskShape
 
 end
 
+
 """ `GaussianCCFMask( inst ; scale_factor )` """
 function GaussianCCFMask(inst::AbstractInstrument; σ_scale_factor::Real = 1, truncation_scale_factor::Real = default_gaussian_ccf_truncation_scale_factor )
     #=
@@ -57,4 +58,14 @@ function (m::GaussianCCFMask)(Δv::Real)
     else
         return m.normalization*exp(-(Δv/m.σ_sqrt2)^2)
     end
+end
+
+function mask_with_increased_fwhm(m::GaussianCCFMask, Δfwhm::Real )
+    σ = m.σ_sqrt2/sqrt(2)
+    w = m.half_width_truncation/σ
+    #fwhm_orig = sqrt(8*log(2)) * σ
+    fwhm_orig = 2*sqrt(log(2)) * m.σ_sqrt2
+    fwhm_new = sqrt(fwhm_orig^2 + Δfwhm^2)
+    σ_new = 0.5*fwhm_new/sqrt(2*log(2))
+    return GaussianCCFMask(σ_new, w)
 end

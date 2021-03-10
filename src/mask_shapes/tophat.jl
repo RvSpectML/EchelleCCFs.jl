@@ -12,7 +12,7 @@ struct TopHatCCFMask <: AbstractCCFMaskShape
     half_width::Float64
 end
 
-""" `TopHatCCFMask( ; half_width=default_v_width )`` """
+""" `TopHatCCFMask( full_width )`` """
 function TopHatCCFMask(w::Real=default_v_width)
     @assert 0 < w < default_v_max
     TopHatCCFMask(w/2)
@@ -50,4 +50,10 @@ function (m::TopHatCCFMask)(Δv::Real)
     #return abs2(Δv)<=abs2(m.half_width) ? 0.5/m.half_width : zero(Δv)  # Old for project_mask that assumes tophat
     return abs(Δv)<=abs(m.half_width) ? 0.5/m.half_width : zero(Δv)  # Old for project_mask that assumes tophat
     #return abs2(Δv)<=abs2(m.half_width) ? 1.0 : zero(Δv)    # New version for project_mask that works with a probability density
+end
+
+
+function mask_with_increased_fwhm(m::TopHatCCFMask, Δfwhm::Real )
+    width = 2*m.half_width+Δfwhm
+    return TopHatCCFMask(width)
 end
