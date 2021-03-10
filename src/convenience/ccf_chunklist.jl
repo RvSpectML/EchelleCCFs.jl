@@ -17,11 +17,19 @@ line list and mask_shape from the ccf plan for each chunk.
 """
 function calc_ccf_chunklist(chunk_list::AbstractChunkList,
                                 plan_for_chunk::AbstractVector{PlanT};
+                                Δfwhm::Real = 0,
                                 assume_sorted::Bool = false ) where {
                                             PlanT<:AbstractCCFPlan }
    num_vels = calc_length_ccf_v_grid(first(plan_for_chunk))
    ccf_out = Array{Float64,1}(undef, num_vels)
-   calc_ccf_chunklist!(ccf_out, chunk_list, plan_for_chunk, assume_sorted=assume_sorted )
+   if Δfwhm > 0
+      this_plan_for_chunk = copy(plan_for_chunk)
+      #increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+      map(chid->increase_mask_fwhm!(this_plan_for_chunk[chid],Δfwhm), 1:num_chunks )
+   else
+      this_plan_for_chunk = plan_for_chunk
+   end
+   calc_ccf_chunklist!(ccf_out, chunk_list, this_plan_for_chunk, assume_sorted=assume_sorted )
    return ccf_out
 end
 
@@ -66,7 +74,7 @@ line list and mask_shape from the ccf plan for each chunk.
 """
 function calc_ccf_and_var_chunklist(chunk_list::AbstractChunkList,
                                 plan_for_chunk::AbstractVector{PlanT};
-                                ccf_var_scale::Real = 1.0,
+                                ccf_var_scale::Real = 1.0, Δfwhm::Real = 0,
                                 assume_sorted::Bool = false ) where {
                                             PlanT<:AbstractCCFPlan }
   @assert length(chunk_list) == length(plan_for_chunk)
@@ -75,9 +83,16 @@ function calc_ccf_and_var_chunklist(chunk_list::AbstractChunkList,
   ccf_out = Array{Float64,1}(undef, num_vels)
   ccf_var_out = Array{Float64,1}(undef, num_vels)
 
+  if Δfwhm > 0
+     this_plan_for_chunk = copy(plan_for_chunk)
+     map(chid->increase_mask_fwhm!(this_plan_for_chunk[chid],Δfwhm), 1:num_chunks )
+  else
+     this_plan_for_chunk = plan_for_chunk
+  end
+
   #(ccf_out, ccf_var_out ) = mapreduce(chid->calc_ccf_and_var_chunk(chunk_list.data[chid], plan_for_chunk[chid],
   #                 assume_sorted=assume_sorted  ), add_tuple_sum, 1:length(chunk_list.data) )
-  calc_ccf_and_var_chunklist!(ccf_out, ccf_var_out, chunk_list,plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted)
+  calc_ccf_and_var_chunklist!(ccf_out, ccf_var_out, chunk_list,this_plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted)
 
   return (ccf=ccf_out, ccf_var=ccf_var_out)
 end
@@ -173,7 +188,9 @@ line list and mask_shape from the ccf plan for each chunk.
 """
 function calc_ccf_and_covar_chunklist(chunk_list::AbstractChunkList,
                                 plan_for_chunk::AbstractVector{PlanT};
-                                ccf_var_scale::Real = 1.0, assume_sorted::Bool = false ) where {
+                                ccf_var_scale::Real = 1.0,
+                                Δfwhm::Real = 0,
+                                assume_sorted::Bool = false ) where {
                                             PlanT<:AbstractCCFPlan }
   @assert length(chunk_list) == length(plan_for_chunk)
   num_chunks = length(chunk_list)
@@ -181,9 +198,17 @@ function calc_ccf_and_covar_chunklist(chunk_list::AbstractChunkList,
   ccf_out = Array{Float64,1}(undef, num_vels)
   ccf_covar_out = Array{Float64,2}(undef, num_vels, num_vels)
 
+  if Δfwhm > 0
+     this_plan_for_chunk = copy(plan_for_chunk)
+     #increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+     map(chid->increase_mask_fwhm!(this_plan_for_chunk[chid],Δfwhm), 1:num_chunks )
+  else
+     this_plan_for_chunk = plan_for_chunk
+  end
+
   #(ccf_out, ccf_covar_out ) = mapreduce(chid->calc_ccf_and_covar_chunk(chunk_list.data[chid], plan_for_chunk[chid],
   #                 assume_sorted=assume_sorted  ), add_tuple_sum, 1:length(chunk_list.data) )
-  calc_ccf_and_covar_chunklist!(ccf_out, ccf_covar_out, chunk_list,plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted)
+  calc_ccf_and_covar_chunklist!(ccf_out, ccf_covar_out, chunk_list,this_plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted)
 
   return (ccf=ccf_out, ccf_covar=ccf_covar_out)
 end
