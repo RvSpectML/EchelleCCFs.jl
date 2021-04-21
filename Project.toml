@@ -1,7 +1,7 @@
 name = "EchelleCCFs"
 uuid = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
 authors = ["Eric Ford"]
-version = "0.1.11"
+version = "0.2.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
