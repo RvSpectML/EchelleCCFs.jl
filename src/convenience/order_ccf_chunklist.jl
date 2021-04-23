@@ -61,7 +61,7 @@ function calc_order_ccfs_chunklist(chunk_list::AbstractChunkList,
     end
 
     chunk_ccfs_out = zeros( num_vels, num_chunks )
-    calc_order_ccfs_chunklist!(chunk_ccfs_out, chunk_list, this_plan_for_chunk, Δfwhm=Δfwhm, assume_sorted=assume_sorted )
+    calc_order_ccfs_chunklist!(chunk_ccfs_out, chunk_list, this_plan_for_chunk, assume_sorted=assume_sorted )
     return chunk_ccfs_out
 end
 
