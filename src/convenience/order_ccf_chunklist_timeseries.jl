@@ -19,8 +19,10 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
     only includes lines that reliably appear in that order for all spectra in the chunklist_timeseries.
 """
 function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
-                plan::PlanT = BasicCCFPlan(); verbose::Bool = false ) where {
-                    PlanT<:AbstractCCFPlan }
+                plan::PlanT = BasicCCFPlan(); verbose::Bool = false ,
+                Δfwhm::AbstractVector{T} = zeros(0)
+                ) where { PlanT<:AbstractCCFPlan, T<:Real  }
+
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
   nvs = calc_length_ccf_v_grid(plan)
@@ -93,13 +95,14 @@ function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
     #  order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan)
   #end
   Threads.@threads for i in 1:nobs
-    order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan_for_chunk, assume_sorted=true )
+      this_Δfwhm = length(Δfwhm) == nobs ? Δfwhm[i] : 0.0
+      order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan_for_chunk, Δfwhm=this_Δfwhm, assume_sorted=true )
   end
 
   return order_ccfs
 end
 
-"""  `calc_order_ccf_chunklist_timeseries( chunklist_timeseries, ccf_plan )`
+"""  `calc_order_ccf_and_var_chunklist_timeseries( chunklist_timeseries, ccf_plan )`
 Convenience function to compute separate CCFs for each chunk (potentially an order or view around one or two lines) of each spectrum in a timeseries.
     CCF is evaluated using line list and mask_shape provided by the ccf plan for each chunk.
 Uses multiple threads if avaliable.
@@ -113,8 +116,10 @@ Note that the ccf_plan provided is used as a template for creating a custom ccf_
     only includes lines that reliably appear in that order for all spectra in the chunklist_timeseries.
 """
 function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimeseries,
-                plan::PlanT = BasicCCFPlan(); verbose::Bool = false ) where {
-                    PlanT<:AbstractCCFPlan }
+                plan::PlanT = BasicCCFPlan(); verbose::Bool = false,
+                ccf_var_scale::Real = 1.0, Δfwhm::AbstractVector{T} = zeros(0)
+                 ) where {
+                    PlanT<:AbstractCCFPlan, T<:Real }
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
   nvs = calc_length_ccf_v_grid(plan)
@@ -186,8 +191,10 @@ function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimes
     #  order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan)
   #end
   Threads.@threads for i in 1:nobs
+      this_Δfwhm = length(Δfwhm) == nobs ? Δfwhm[i] : 0.0
       for j in 1:num_chunks(clt)
-          ( ccf_tmp, ccf_var_tmp ) = calc_ccf_and_var_chunk(clt.chunk_list[i][j], plan_for_chunk[j], assume_sorted=true )
+          ( ccf_tmp, ccf_var_tmp ) = calc_ccf_and_var_chunk(clt.chunk_list[i][j], plan_for_chunk[j],
+                                            ccf_var_scale=ccf_var_scale, Δfwhm=this_Δfwhm, assume_sorted=true )
           order_ccfs[:,j,i] .= ccf_tmp
           order_ccf_vars[:,j,i] .= ccf_var_tmp
       end

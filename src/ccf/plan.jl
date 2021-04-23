@@ -71,3 +71,7 @@ function increase_mask_fwhm!(p::PlanT, Δfwhm::Real ) where { PlanT<:BasicCCFPla
     end
     return p
 end
+
+function copy(plan::BasicCCFPlan{MST, LLT} ) where { MST<:AbstractCCFMaskShape, LLT<:AbstractLineList }
+    BasicCCFPlan(plan.v_center, plan.v_step, plan.v_max, plan.v_range_no_mask_change, deepcopy(plan.mask_shape), plan.line_list, plan.allow_nans)
+end

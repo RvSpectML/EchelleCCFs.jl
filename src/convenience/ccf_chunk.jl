@@ -87,15 +87,21 @@ Convenience function to compute CCF for one chunk of spectrum.
 - CCF for one chunk of spectrum, evaluated using mask_shape and line list from ccf plan
 """
 function calc_ccf_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPlan()
-                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0,
+                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0, Δfwhm::Real = 0,
                  assume_sorted::Bool = false, calc_ccf_var::Bool = false ) where { T<:Real, PlanT<:AbstractCCFPlan }
+  if Δfwhm > 0
+     this_plan_for_chunk = copy(plan)
+     increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+  else
+     this_plan_for_chunk = plan
+  end
   len_v_grid = calc_length_ccf_v_grid(plan)
   ccf_out = zeros(len_v_grid)
   if calc_ccf_var
     ccf_var_out = zeros(len_v_grid)
-    return calc_ccf_and_var_chunk!(ccf_out, ccf_var_out, chunk, plan, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted )
+    return calc_ccf_and_var_chunk!(ccf_out, ccf_var_out, chunk, this_plan_for_chunk, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=assume_sorted )
   else
-    return calc_ccf_chunk!(ccf_out, chunk, plan, var=var, assume_sorted=assume_sorted )
+    return calc_ccf_chunk!(ccf_out, chunk, this_plan_for_chunk, var=var, assume_sorted=assume_sorted )
   end
 end
 
@@ -114,13 +120,19 @@ Convenience function to compute CCF and variance of each "CCF pixel" for one chu
 - `ccf_var_out`:
 """
 function calc_ccf_and_var_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPlan()
-                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0,
+                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0, Δfwhm::Real = 0,
                  assume_sorted::Bool = false ) where { T<:Real, PlanT<:AbstractCCFPlan }
   @assert assume_sorted || issorted( plan.line_list.λ )
+  if Δfwhm > 0
+     this_plan_for_chunk = copy(plan)
+     increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+  else
+     this_plan_for_chunk = plan
+  end
   len_v_grid = calc_length_ccf_v_grid(plan)
   ccf_out = zeros(len_v_grid)
   ccf_var_out = zeros(len_v_grid)
-  calc_ccf_and_var_chunk!(ccf_out, ccf_var_out, chunk, plan, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=true )
+  calc_ccf_and_var_chunk!(ccf_out, ccf_var_out, chunk, this_plan_for_chunk, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=true )
   return (ccf=ccf_out, ccf_var=ccf_var_out)
 end
 
@@ -139,12 +151,18 @@ Convenience function to compute CCF and covariance of each pair of "CCF pixels" 
 - `ccf_covar_out`:
 """
 function calc_ccf_and_covar_chunk(chunk::AbstractChunkOfSpectrum, plan::PlanT = BasicCCFPlan()
-                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0,
+                 ; var::AbstractVector{T} = chunk.var, ccf_var_scale::Real = 1.0, Δfwhm::Real = 0,
                  assume_sorted::Bool = false ) where { T<:Real, PlanT<:AbstractCCFPlan }
   @assert assume_sorted || issorted( plan.line_list.λ )
+  if Δfwhm > 0
+     this_plan_for_chunk = copy(plan)
+     increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+  else
+     this_plan_for_chunk = plan
+  end
   len_v_grid = calc_length_ccf_v_grid(plan)
   ccf_out = zeros(len_v_grid)
   ccf_covar_out = zeros(len_v_grid,len_v_grid)
-  calc_ccf_and_covar_chunk!(ccf_out, ccf_covar_out, chunk, plan, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=true )
+  calc_ccf_and_covar_chunk!(ccf_out, ccf_covar_out, chunk, this_plan_for_chunk, var=var, ccf_var_scale=ccf_var_scale, assume_sorted=true )
   return (ccf=ccf_out, ccf_covar=ccf_covar_out)
 end

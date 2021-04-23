@@ -45,14 +45,23 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccfs_chunklist(chunk_list::AbstractChunkList,
-    plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan(); assume_sorted::Bool = false ) where {
+                plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan();
+                Δfwhm::Real = 0, assume_sorted::Bool = false ) where {
                         PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
     @assert length(plan_for_chunk) == num_chunks
     @assert assume_sorted || issorted( first(plan_for_chunk).line_list.λ )
     num_vels = maximum(map(chid->calc_length_ccf_v_grid(plan_for_chunk[chid]), 1:num_chunks ))
+    if Δfwhm > 0
+       this_plan_for_chunk = copy(plan_for_chunk)
+       #increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+       map(chid->increase_mask_fwhm!(this_plan_for_chunk[chid],Δfwhm), 1:num_chunks )
+    else
+       this_plan_for_chunk = plan_for_chunk
+    end
+
     chunk_ccfs_out = zeros( num_vels, num_chunks )
-    calc_order_ccfs_chunklist!(chunk_ccfs_out, chunk_list, plan_for_chunk, assume_sorted=assume_sorted )
+    calc_order_ccfs_chunklist!(chunk_ccfs_out, chunk_list, this_plan_for_chunk, Δfwhm=Δfwhm, assume_sorted=assume_sorted )
     return chunk_ccfs_out
 end
 
@@ -97,16 +106,25 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccf_and_vars_chunklist(chunk_list::AbstractChunkList,
-    plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan(); assume_sorted::Bool = false ) where {
+            plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan();
+            Δfwhm::Real = 0, assume_sorted::Bool = false ) where {
                         PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
     @assert length(plan_for_chunk) == num_chunks
     @assert assume_sorted || issorted( first(plan_for_chunk).line_list.λ )
 
+    if Δfwhm > 0
+       this_plan_for_chunk = copy(plan_for_chunk)
+       #increase_mask_fwhm!(this_plan_for_chunk,Δfwhm)
+       map(chid->increase_mask_fwhm!(this_plan_for_chunk[chid],Δfwhm), 1:num_chunks )
+    else
+       this_plan_for_chunk = plan_for_chunk
+    end
+
     num_vels = maximum(map(chid->calc_length_ccf_v_grid(plan_for_chunk[chid]), 1:num_chunks ))
     chunk_ccfs_out = zeros( num_vels, num_chunks )
     chunk_ccf_vars_out = zeros( num_vels, num_chunks )
 
-    calc_order_ccf_and_vars_chunklist!(chunk_ccfs_out, chunk_ccf_vars_out, chunk_list, plan_for_chunk, assume_sorted=assume_sorted )
+    calc_order_ccf_and_vars_chunklist!(chunk_ccfs_out, chunk_ccf_vars_out, chunk_list, this_plan_for_chunk, assume_sorted=assume_sorted )
     return (ccfs=chunk_ccfs_out, ccf_vars=chunk_ccf_vars_out)
 end
