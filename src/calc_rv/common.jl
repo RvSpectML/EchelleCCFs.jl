@@ -163,12 +163,16 @@ function find_idx_at_and_around_minimum(vels::A1, ccf::A2; frac_of_width_to_fit:
 
     # find the min and fit only that
     amin = argmin(ccf)
+    if amin == 1 || amin==length(vels)
+        offset = max(1,floor(Int64,length(vels)//4))
+        amin = argmin(view(ccf,offset:(length(vels)-offset)))
+        amin += offset-1
+    end
     lend = vels[amin] - frac_of_width_to_fit * full_width
     rend = vels[amin] + frac_of_width_to_fit * full_width
-
     # get the indices
-    lind = searchsortednearest(vels[1:amin], lend)
-    rind = amin + searchsortednearest(vels[amin+1:end], rend)
+    lind = searchsortednearest(view(vels,1:amin), lend)
+    rind = amin + searchsortednearest(view(vels,(amin+1):length(vels)), rend)
     inds = lind:rind
 
     return (amin, inds)
