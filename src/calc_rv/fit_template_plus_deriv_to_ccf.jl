@@ -55,6 +55,9 @@ function MeasureRvFromCCFTemplate(; v_grid::AbstractVector{T1},
     deriv = numerical_deriv(v_grid, template)
 	# find the min and fit only the part near the minimum of the CCF
     v_min, v_idx_to_fit = find_idx_at_and_around_minimum(v_grid, template, frac_of_width_to_fit=frac_of_width_to_fit, measure_width_at_frac_depth=measure_width_at_frac_depth)
+    if isnan(v_min) || isnothing(first(v_idx_to_fit)) || isnothing(last(v_idx_to_fit))
+       v_idx_to_fit = 0:0
+    end
     MeasureRvFromCCFTemplate(v_grid, template, deriv, mean_var, v_idx_to_fit)
 end
 
@@ -65,6 +68,7 @@ end
 
 function (mrv::MeasureRvFromCCFTemplate)(vels::A1, ccf::A2, ccf_var::A3 = ones(length(ccf)) ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}  }
         @assert all(vels .== mrv.v_grid)  # Could relax this, but keep it simple for now
+        if length(mrv.v_idx_to_fit) <= 1     return (rv=NaN, σ_rv=NaN)    end
         # fit only the part near the minimum of the CCF
 		deriv = view(mrv.deriv,mrv.v_idx_to_fit)
 		var = view(ccf_var,mrv.v_idx_to_fit)
@@ -79,6 +83,7 @@ end
 
 function (mrv::MeasureRvFromCCFTemplate)(vels::A1, ccf::A2, ccf_var::A3, ccf_covar::A4  ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,2}  }
         @assert all(vels .== mrv.v_grid)  # Could relax this, but keep it simple for now
+        if length(v_idx_to_fit) <= 1     return (rv=NaN, σ_rv=NaN)    end
 		# fit only the part near the minimum of the CCF
 		deriv = view(mrv.deriv,mrv.v_idx_to_fit)
 		diag_scale_factor = mean(ccf_var)-mrv.mean_var

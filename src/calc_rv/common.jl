@@ -139,6 +139,7 @@ function est_full_width(vels::A1, ccf::A2; measure_width_at_frac_depth::Real = d
     ind1 = findfirst(ccf .<= target_val)
     ind2 = findlast(ccf .<= target_val)
     if isnothing(ind1) || isnothing(ind2)
+        return NaN
         println("ccf = ",ccf)
         println("minccf= ", minccf, " maxccf= ", maxccf, " depth= ", depth, " measure_width_at_frac_depth= ", measure_width_at_frac_depth, " targetval= ",target_val, " ind1= ", ind1, " ind2= ", ind2)
         @error "est_full_width failed."
@@ -160,6 +161,9 @@ Optional Arguements:
 function find_idx_at_and_around_minimum(vels::A1, ccf::A2; frac_of_width_to_fit::Real = default_frac_of_width_to_fit, measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1} }
     # do a prelim fit to get the width
     full_width = est_full_width(vels, ccf, measure_width_at_frac_depth=measure_width_at_frac_depth)
+    if isnan(full_width)
+       return (NaN, 1:length(vels))
+    end
 
     # find the min and fit only that
     amin = argmin(ccf)
