@@ -1,7 +1,7 @@
 name = "EchelleCCFs"
 uuid = "5d9f57b1-d7b5-417c-8d79-eedbcaad0187"
 authors = ["Eric Ford"]
-version = "0.2.3"
+version = "0.2.4"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -27,7 +27,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 ThreadedIterables = "11d239b0-c0b9-11e8-1935-d5cfa53abb03"
 
 [compat]
-CSV = "0.7, 0.8"
+CSV = "0.7, 0.8, >=0.9.10"
 DataFrames = "0.20, 0.21, 0.22, 1.0, 1.1"
 FITSIO = "0.16"
 ForwardDiff = "0.10"
