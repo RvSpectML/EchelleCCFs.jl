@@ -6,7 +6,7 @@ Based on code by Alex Wise (aw@psu.edu)
 Refactors & optimized by Eric Ford
 """
 
-
+import PyPlot; plt = PyPlot; mpl = plt.matplotlib; plt.ioff()
 
 """  Functor to estimate RV based on fitting quadratic near minimum of CCF.
 TODO: Revist the logic here and see if need to perform transformation first.
@@ -25,7 +25,7 @@ Optional Arguments:
 function MeasureRvFromCCFQuadratic(; frac_of_width_to_fit::Real = default_frac_of_width_to_fit,
                                     measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth )
     @assert 0.25 <= measure_width_at_frac_depth <= 0.75
-    @assert 0.1 <= frac_of_width_to_fit <= 2.0
+    @assert 0.0 <= frac_of_width_to_fit <= 2.0
     MeasureRvFromCCFQuadratic(frac_of_width_to_fit,measure_width_at_frac_depth)
 end
 
@@ -33,24 +33,24 @@ using Statistics
 function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1} }
     # find the min and fit only the part near the minimum of the CCF
     amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
-    if isnan(amin)     return ( rv=NaN, σ_rv=NaN )     end
+    if isnan(amin) return (rv=NaN, σ_rv=NaN) end
 
-    mean_v = mean(view(vels,inds))
-    X = ones(length(inds),3)
-    X[:,2] .= view(vels,inds) .-mean_v
-    X[:,3] .= (view(vels,inds) .-mean_v).^2
-    (c, b, a)  = (X'*X) \ (X'*view(ccf,inds))
-    #=
-    # do the polyfit
-    pfit = Polynomials.fit(vels[inds], ccf[inds], 2)
-    @assert length(Polynomials.coeffs(pfit)) >= 3   # just in case fails to fit a quadratic
+    # set up linear system to solve
+    A = ones(3,3)
+    A[[3,5,7]] .= sum(view(vels, inds).^2)  # set anti-diagonal indices
+    A[1,1] = length(view(vels, inds))
+    A[1,2] = A[2,1] = sum(view(vels, inds))
+    A[2,3] = A[3,2] = sum(view(vels, inds).^3)
+    A[3,3] = sum(view(vels, inds).^4)
 
-    # get center from coeffs
-    c, b, a = Polynomials.coeffs(pfit)
-    @assert a>0
-    =#
-    v_at_min_of_quadratic = -b/(2*a) + mean_v
-    return ( rv=v_at_min_of_quadratic, σ_rv=NaN )
+    rhs = ones(3)
+    rhs[1] = sum(view(ccf,inds))
+    rhs[2] = sum(view(ccf,inds) .* view(vels,inds))
+    rhs[3] = sum(view(ccf,inds) .* view(vels,inds).^2)
+    (c, b, a) = A \ rhs
+
+    v_at_min_of_quadratic = -b/(2*a)
+    return (rv=v_at_min_of_quadratic, σ_rv=NaN)
 end
 
 function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2, ccf_var::A2 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1} }
@@ -68,13 +68,5 @@ function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2, ccf_var::A2 ) where
     v_at_min_of_quadratic = -b/(2*a)
     sigma_rv = abs(v_at_min_of_quadratic) * sqrt(covar_beta[2,2]/b^2+covar_beta[3,3]/a^2)
     v_at_min_of_quadratic += mean_v
-    #=
-    # do the polyfit
-    pfit = Polynomials.fit(vels[inds], ccf[inds], 2)
-    @assert length(Polynomials.coeffs(pfit)) >= 3   # just in case fails to fit a quadratic
-
-    # get center from coeffs
-    c, b, a = Polynomials.coeffs(pfit)
-    =#
-    return ( rv=v_at_min_of_quadratic, σ_rv=sigma_rv  )
+    return (rv=v_at_min_of_quadratic, σ_rv=sigma_rv)
 end
