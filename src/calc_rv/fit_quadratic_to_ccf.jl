@@ -6,8 +6,6 @@ Based on code by Alex Wise (aw@psu.edu)
 Refactors & optimized by Eric Ford
 """
 
-import PyPlot; plt = PyPlot; mpl = plt.matplotlib; plt.ioff()
-
 """  Functor to estimate RV based on fitting quadratic near minimum of CCF.
 TODO: Revist the logic here and see if need to perform transformation first.
 """
@@ -25,7 +23,7 @@ Optional Arguments:
 function MeasureRvFromCCFQuadratic(; frac_of_width_to_fit::Real = default_frac_of_width_to_fit,
                                     measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth )
     @assert 0.25 <= measure_width_at_frac_depth <= 0.75
-    @assert 0.0 <= frac_of_width_to_fit <= 2.0
+    @assert 0.1 <= frac_of_width_to_fit <= 2.0
     MeasureRvFromCCFQuadratic(frac_of_width_to_fit,measure_width_at_frac_depth)
 end
 
