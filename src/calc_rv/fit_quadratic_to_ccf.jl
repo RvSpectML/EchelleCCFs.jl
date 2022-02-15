@@ -31,23 +31,15 @@ using Statistics
 function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1} }
     # find the min and fit only the part near the minimum of the CCF
     amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
-    if isnan(amin) return (rv=NaN, σ_rv=NaN) end
+    if isnan(amin)     return ( rv=NaN, σ_rv=NaN )     end
 
-    # set up linear system to solve
-    A = ones(3,3)
-    A[[3,5,7]] .= sum(view(vels, inds).^2)  # set anti-diagonal indices
-    A[1,1] = length(view(vels, inds))
-    A[1,2] = A[2,1] = sum(view(vels, inds))
-    A[2,3] = A[3,2] = sum(view(vels, inds).^3)
-    A[3,3] = sum(view(vels, inds).^4)
+    mean_v = mean(view(vels,inds))
+    X = ones(length(inds),3)
+    X[:,2] .= view(vels,inds) .-mean_v
+    X[:,3] .= (view(vels,inds) .-mean_v).^2
+    (c, b, a)  = (X'*X) \ (X'*view(ccf,inds))
 
-    rhs = ones(3)
-    rhs[1] = sum(view(ccf,inds))
-    rhs[2] = sum(view(ccf,inds) .* view(vels,inds))
-    rhs[3] = sum(view(ccf,inds) .* view(vels,inds).^2)
-    (c, b, a) = A \ rhs
-
-    v_at_min_of_quadratic = -b/(2*a)
+    v_at_min_of_quadratic = -b/(2*a) + mean_v
     return (rv=v_at_min_of_quadratic, σ_rv=NaN)
 end
 
