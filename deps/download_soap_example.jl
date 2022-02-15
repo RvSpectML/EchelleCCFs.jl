@@ -3,7 +3,7 @@
 
 include("download.jl")
 
-download_url = "https://psu.box.com/shared/static/nikva44r7xai9h0ulfj2pxewzv8ez4fo.h5"
+download_url = "https://zenodo.org/record/6077993/files/soap_demo.h5?download=1"
 download_filename = joinpath("..","data","spectra","soap_demo.h5")
 download_md5 = "18a6291039d7684ef9187762e4b2dfd5"
 

@@ -1,6 +1,6 @@
 using EchelleCCFs
 using Test
-
+import Statistics: mean
 
 @testset "Check CCF accuracy" begin  # TODO repeat for multiple mask shapes
     @testset "Tophat mask w/ 1 line" begin
@@ -134,5 +134,53 @@ using Test
         vfit = measure_rv_from_ccf(v_grid,ccf)
         @test vfit.rv ≈ 0  atol = 500   # TODO: tune tolerance better
         =#
+    end
+    @testset "RV injection/extraction" begin
+        # velocities
+        amp = 1.0 # meters per second
+        vel = amp .* sin.(range(0, 2π, length=100))
+        mid = 5434.5
+        dep = 0.75
+        wid = 0.1
+        mid_shift = mid .* EchelleCCFs.calc_doppler_factor.(vel)
+
+        # compute gaussian line spectrum
+        buffer = 0.75
+        resolution = 7e5
+        Δlnλ = (1.0 / resolution)
+        wavs = exp.(range(log(mid - buffer), log(mid + buffer), step=Δlnλ))
+
+        flux = zeros(length(wavs), length(vel))
+        for i in eachindex(vel)
+            flux[:,i] .= @. 1.0 - dep * exp(-((wavs-mid_shift[i])/wid)^2 / 2.0)
+        end
+
+        # measure ccf
+        line_list = EchelleCCFs.BasicLineList([mid], [dep])
+        speed_of_light = EchelleCCFs.speed_of_light_mps
+        mask_width = speed_of_light/resolution
+        mask_shape = TopHatCCFMask(mask_width)
+        ccf_plan = BasicCCFPlan(line_list=line_list, mask_shape=mask_shape)
+        v_grid = EchelleCCFs.calc_ccf_v_grid(ccf_plan)
+        ccf = EchelleCCFs.ccf_1D(wavs, flux, ccf_plan)
+
+        # measure velocities from CCF
+        mrv_gauss = MeasureRvFromCCFGaussian(frac_of_width_to_fit=0.5)
+        mrv_quad = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=0.1)
+
+        rvs_gauss = zeros(length(vel))
+        sig_gauss = zeros(length(vel))
+        rvs_quad = zeros(length(vel))
+        sig_quad = zeros(length(vel))
+        for i in eachindex(vel)
+            rvs_gauss[i], sig_gauss[i] = mrv_gauss(v_grid, view(ccf, :, i))
+            rvs_quad[i], sig_quad[i] = mrv_quad(v_grid, view(ccf, :, i))
+        end
+        err_gauss = abs.(rvs_gauss .- mean(rvs_gauss) .- vel)
+        err_quad = abs.(rvs_quad .- mean(rvs_quad) .- vel)
+
+        # test maximum errors are less than a cm/s
+        @assert maximum(err_gauss) < 1e-2
+        @assert maximum(err_quad) < 1e-2
     end
 end

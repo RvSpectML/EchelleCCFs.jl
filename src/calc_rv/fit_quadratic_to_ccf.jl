@@ -6,8 +6,6 @@ Based on code by Alex Wise (aw@psu.edu)
 Refactors & optimized by Eric Ford
 """
 
-
-
 """  Functor to estimate RV based on fitting quadratic near minimum of CCF.
 TODO: Revist the logic here and see if need to perform transformation first.
 """
@@ -40,17 +38,9 @@ function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2 ) where {T1<:Real, A
     X[:,2] .= view(vels,inds) .-mean_v
     X[:,3] .= (view(vels,inds) .-mean_v).^2
     (c, b, a)  = (X'*X) \ (X'*view(ccf,inds))
-    #=
-    # do the polyfit
-    pfit = Polynomials.fit(vels[inds], ccf[inds], 2)
-    @assert length(Polynomials.coeffs(pfit)) >= 3   # just in case fails to fit a quadratic
 
-    # get center from coeffs
-    c, b, a = Polynomials.coeffs(pfit)
-    @assert a>0
-    =#
     v_at_min_of_quadratic = -b/(2*a) + mean_v
-    return ( rv=v_at_min_of_quadratic, σ_rv=NaN )
+    return (rv=v_at_min_of_quadratic, σ_rv=NaN)
 end
 
 function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2, ccf_var::A2 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1} }
@@ -68,13 +58,5 @@ function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2, ccf_var::A2 ) where
     v_at_min_of_quadratic = -b/(2*a)
     sigma_rv = abs(v_at_min_of_quadratic) * sqrt(covar_beta[2,2]/b^2+covar_beta[3,3]/a^2)
     v_at_min_of_quadratic += mean_v
-    #=
-    # do the polyfit
-    pfit = Polynomials.fit(vels[inds], ccf[inds], 2)
-    @assert length(Polynomials.coeffs(pfit)) >= 3   # just in case fails to fit a quadratic
-
-    # get center from coeffs
-    c, b, a = Polynomials.coeffs(pfit)
-    =#
-    return ( rv=v_at_min_of_quadratic, σ_rv=sigma_rv  )
+    return (rv=v_at_min_of_quadratic, σ_rv=sigma_rv)
 end
