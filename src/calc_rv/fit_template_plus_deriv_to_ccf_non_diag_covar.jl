@@ -17,9 +17,9 @@ struct MeasureRvFromCCFTemplateNonDiagCovar <: AbstractMeasureRvFromCCF
     v_grid::AbstractVector{Float64}
     template::AbstractVector{Float64}
     deriv::AbstractVector{Float64}
-	mean_var::Float64
-	near_diag_covar::AbstractArray{Float64,2}
-	v_idx_to_fit::UnitRange{Int64}
+    mean_var::Float64
+    near_diag_covar::AbstractArray{Float64,2}
+    v_idx_to_fit::UnitRange{Int64}
 end
 
 #=
@@ -39,27 +39,27 @@ Construct functor to estimate RV based on the CCF.
 TODO: Implement correctly.  Not yet working/tested.
 Optional Arguments:
 - `v_grid`:  list of velocities where template is evaluated
-- `tempalte`: template ccf evaluated at v_grid
+- `template`: template ccf evaluated at v_grid
 - `frac_of_width_to_fit`: (0.5)
 - `measure_width_at_frac_depth`: (0.5)
 """
 function MeasureRvFromCCFTemplateNonDiagCovar(; v_grid::AbstractVector{T1},
-                                    template::AbstractVector{T2},
-									frac_of_width_to_fit::Real = default_frac_of_width_to_fit,
-                                    measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth,
-									mean_var::Real = 0,
-									near_diag_covar::AbstractArray{T3,2} = zeros(length(v_grid),length(v_grid))
-                                     ) where { T1<:Real, T2<:Real, T3<:Real }
+                                    		template::AbstractVector{T2},
+						frac_of_width_to_fit::Real = default_frac_of_width_to_fit,
+                                    		measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth,
+						mean_var::Real = 0,
+						near_diag_covar::AbstractArray{T3,2} = zeros(length(v_grid),length(v_grid))
+                                     		) where { T1<:Real, T2<:Real, T3<:Real }
     @assert length(v_grid) == length(template)
     @assert length(v_grid) >= 3
     @assert 0.25 <= measure_width_at_frac_depth <= 0.75
     @assert 0.1 <= frac_of_width_to_fit <= 5.0  # TODO: FIgure out appropriate range
-	@assert 0 <= mean_var < Inf
-	# Estimate derivative
+    @assert 0 <= mean_var < Inf
+    # Estimate derivative
     deriv = numerical_deriv(v_grid, template)
-	# find the min and fit only the part near the minimum of the CCF
+    # find the min and fit only the part near the minimum of the CCF
     v_min, v_idx_to_fit = find_idx_at_and_around_minimum(v_grid, template, frac_of_width_to_fit=frac_of_width_to_fit, measure_width_at_frac_depth=measure_width_at_frac_depth)
-	#near_diag_covar = zeros(length(v_grid),length(v_grid))
+    #near_diag_covar = zeros(length(v_grid),length(v_grid))
     MeasureRvFromCCFTemplateNonDiagCovar(v_grid, template, deriv, mean_var, near_diag_covar, v_idx_to_fit)
 end
 
