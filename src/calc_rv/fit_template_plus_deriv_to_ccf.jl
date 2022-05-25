@@ -83,7 +83,7 @@ end
 
 function (mrv::MeasureRvFromCCFTemplate)(vels::A1, ccf::A2, ccf_var::A3, ccf_covar::A4  ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,2}  }
         @assert all(vels .== mrv.v_grid)  # Could relax this, but keep it simple for now
-        if length(v_idx_to_fit) <= 1     return (rv=NaN, σ_rv=NaN)    end
+        if length(mrv.v_idx_to_fit) <= 1     return (rv=NaN, σ_rv=NaN)    end
 		# fit only the part near the minimum of the CCF
 		deriv = view(mrv.deriv,mrv.v_idx_to_fit)
 		diag_scale_factor = mean(ccf_var)-mrv.mean_var
