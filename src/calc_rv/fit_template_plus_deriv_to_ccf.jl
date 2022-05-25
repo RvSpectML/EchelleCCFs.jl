@@ -17,7 +17,7 @@ struct MeasureRvFromCCFTemplate <: AbstractMeasureRvFromCCF
     v_grid::AbstractVector{Float64}
     template::AbstractVector{Float64}
     deriv::AbstractVector{Float64}
-	mean_var::Real
+    mean_var::Real
     v_idx_to_fit::UnitRange{Int64}
 end
 
