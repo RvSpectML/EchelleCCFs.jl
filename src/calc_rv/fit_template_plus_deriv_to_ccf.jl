@@ -24,7 +24,7 @@ end
 # Todo: Replace with version in RvSpectMLBase or a (brute force?/temporal?) GP?
 function numerical_deriv( x::AA1, y::AA2 )   where { T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Real, AA2<:AbstractArray{T2,1}  }
 	@assert length(x) == length(y)
-	dydx = zeros(size(y))
+	dydx = zeros(length(y))
 	dydx[1] = (y[2]-y[1])/(x[2]-x[1])
 	dydx[2:end-1] .= (y[3:end].-y[1:end-2])./(x[3:end].-x[1:end-2])
 	dydx[end] = (y[end]-y[end-1])/(x[end]-x[end-1])
