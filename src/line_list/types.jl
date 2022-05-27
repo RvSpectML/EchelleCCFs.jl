@@ -84,5 +84,5 @@ end
 =#
 
 import Base.length
-""" Return length of line linst. """
+""" Return length of line list. """
 length(ll::AbstractLineList) = length(ll.weight)
