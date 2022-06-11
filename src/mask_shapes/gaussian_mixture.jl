@@ -13,7 +13,7 @@ and one parameter for the velocity width at which the whole thing is truncated.
 Mask weights are stored separately in a line list.
 TODO: Test before using
 """
-struct GaussianMixtureMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
+struct GaussianMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
     weight::SVector{NMix,Float64}
     σ_sqrt2::SVector{NMix,Float64}
     v_offset::SVector{NMix,Float64}
