@@ -67,7 +67,7 @@ end
 function integrate(m::GaussianMixtureCCFMask, v_lo::Real,v_hi::Real)
     @assert -m.truncation_Δv <= v_lo < v_hi <= m.truncation_Δv
     #quadgk(m, v_lo, v_hi)[1]
-    mapreduce(i->cdf(m,v_lo,v_hi,i),+,1:length(m.weights))
+    mapreduce(i->cdf(m,v_lo,v_hi,i),+,1:length(m.weight))
 end
 
 """ Functor for returning PSF for Δv <= half_width.  """
@@ -75,7 +75,7 @@ function (m::GaussianMixtureCCFMask)(Δv::Real)
     if abs2(Δv) > abs2(m.truncation_Δv)
         return zero(Δv)
     else
-        return mapreduce(i->pdf(m,Δv,i),+,1:length(m.weights))
+        return mapreduce(i->pdf(m,Δv,i),+,1:length(m.weight))
     end
 end
 
