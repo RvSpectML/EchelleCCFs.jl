@@ -24,7 +24,7 @@ struct GaussianMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
 
     """ GaussianMixtureCCFMask( σ ; half_truncation_width_in_σ=2 ) """
     function GaussianMixtureCCFMask(weight::AbstractVector{Float64}, σ::AbstractVector{Float64}, truncation_Δv::Real; v_offset::AbstractVector{Float64}=zeros(length(weight)) )
-        n = legnth(weight)
+        n = length(weight)
         @assert 1 <= n <= 10   # Arbitrary upper limit
         @assert length(σ) == n
         @assert length(v_offset) == n
