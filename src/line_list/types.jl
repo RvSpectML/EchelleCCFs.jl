@@ -18,7 +18,7 @@ end
 function BasicLineList{T}(λ::AA, w::AA) where { T<:Real, AA<:AbstractArray{T,1} }
     @assert length(λ) == length(w)
     @assert length(λ) >= 1
-    @assert 0.0 .<= w .<= 1.0
+    @assert all(0.0 .<= w .<= 1.0)
     BasicLineList{eltype(w),typeof(w)}(λ,w)
 end
 
