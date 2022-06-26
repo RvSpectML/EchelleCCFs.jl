@@ -64,8 +64,7 @@ function MeasureRvFromCCFTemplateNonDiagCovar(; v_grid::AbstractVector{T1},
 end
 
 function set_mean_var(in::MeasureRvFromCCFTemplateNonDiagCovar, mean_var::Real)
-	MeasureRvFromCCFTemplateNonDiagCovar(v_grid=in.v_grid,template=in.template, frac_of_width_to_fit=in.frac_of_width_to_fit, measure_width_at_frac_depth=in.measure_width_at_frac_depth,
-		mean_var=mean_var, near_diag_covar=in.near_diag_covar )
+	MeasureRvFromCCFTemplateNonDiagCovar(v_grid=in.v_grid,template=in.template, mean_var=mean_var, near_diag_covar=in.near_diag_covar )
 end
 
 function (mrv::MeasureRvFromCCFTemplateNonDiagCovar)(vels::A1, ccf::A2, ccf_var::A3, ccf_covar::A4  ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1}, T4<:Real, A4<:AbstractArray{T4,2}  }
