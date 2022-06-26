@@ -64,6 +64,6 @@ end
 
 function calc_ccf_template( ccfs::A2, ccf_vars::A3; assume_normalized::Bool = false  ) where { T2<:Real, A2<:AbstractArray{T2,2}, T3<:Real, A3<:AbstractArray{T3,2}  }
     (ccfs_norm, ccf_vars_norm) = assume_normalized ? (ccfs, ccf_vars) : calc_normalized_ccfs(ccfs, ccf_vars)
-    ccf_template = vec(sum(ccfs./ccf_vars,dims=2) ./sum(1.0 ./ccf_vars,dims=2))
+    ccf_template = vec(sum(ccfs_norm./ccf_vars_norm,dims=2) ./sum(1.0 ./ccf_vars_norm,dims=2))
     return ccf_template
 end
