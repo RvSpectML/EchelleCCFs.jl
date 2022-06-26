@@ -57,10 +57,12 @@ end
 λ_max(m::GaussianMixtureCCFMask,λ::Real) = λ*calc_doppler_factor(m.truncation_Δv)
 
 function cdf(m::GaussianMixtureCCFMask, v_lo::Real,v_hi::Real, i::Integer)
+    @assert 1 <= i <= length(m.weight)
     m.cdf_normalization[i]*( erf((v_hi-v_offset[i])/σ_sqrt2[i]) - erf((-v_lo-v_offset[i])/σ_sqrt2[i]) )
 end
 
 function pdf(m::GaussianMixtureCCFMask, Δv::Real, i::Integer)
+    @assert 1 <= i <= length(m.weight)
     m.normalization[i]*exp(-(Δv-m.v_offset[i]/m.σ_sqrt2[i])^2)
 end
 
