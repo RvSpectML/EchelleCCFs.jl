@@ -20,6 +20,8 @@ function calc_ccf_chunklist(chunk_list::AbstractChunkList,
                                 Δfwhm::Real = 0,
                                 assume_sorted::Bool = false ) where {
                                             PlanT<:AbstractCCFPlan }
+   num_chunks = length(chunk_list)
+   @assert length(plan_for_chunk) == num_chunks
    num_vels = calc_length_ccf_v_grid(first(plan_for_chunk))
    ccf_out = Array{Float64,1}(undef, num_vels)
    if Δfwhm > 0
