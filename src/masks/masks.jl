@@ -17,6 +17,7 @@ end
 
 default_calc_chunk_width = ChunkWidthFixedΔlnλ(default_chunk_size_factor*default_line_width_mps/speed_of_light_mps)  # Used by read_mask_espresso and read_vald for assigning lambda_lo and lambda_hi
 
+#=
 """
    Functor to return a scale factor for chunk widths that depends on the chunk's central wavelength.
 
@@ -33,7 +34,7 @@ function (f::ChunkWidthFuncOfλ)(λ::Real; chunk_size_factor::Real = default_chu
     Δlnλ = sqrt(chunk_half_width^2+psf_width^2)
     return Δlnλ
 end
-
+=#
 
 """
     Read mask in ESPRESSO csv format.
