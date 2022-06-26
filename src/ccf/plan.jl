@@ -40,11 +40,13 @@ function BasicCCFPlan(;midpoint::Real=default_v_center, step::Real=default_v_ste
 end
 
 """ `calc_ccf_v_grid( plan )`
-Return range with 2n+1 points between -v_max and v_max where CCF is to be evaluated.
+Return range where CCF is to be evaluated,
+Centered around plan.v_center going up to at least plan.v_max in steps of size plan.v_step.
 Units based on those in plan.
 """
 function calc_ccf_v_grid(p::PlanT where PlanT<:BasicCCFPlan )
-    n = ceil(Int, p.v_max/p.v_step)
+    #n = ceil(Int, p.v_max/p.v_step)
+    n = ceil(Int, (p.v_max-p.v_center)/p.v_step)
     range(p.v_center-n*p.v_step, p.v_center+n*p.v_step, length=2*n+1)
 end
 
@@ -52,7 +54,8 @@ end
 Return number of points in the velocity grid (without needing to create the range).
 """
 function calc_length_ccf_v_grid(p::PlanT where PlanT<:BasicCCFPlan )
-    n = ceil(Int, p.v_max/p.v_step)
+    #n = ceil(Int, p.v_max/p.v_step)
+    n = ceil(Int, (p.v_max-p.v_center)/p.v_step)
     length=2*n+1
 end
 
