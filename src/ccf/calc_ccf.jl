@@ -323,10 +323,10 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
     λsre_cur = 0.5*(λs[p]+λs[p+1])   # Current pixel's left edge
     #@assert issorted( plan.line_list.λ )  # Moved outside of inner loop
     m = searchsortedfirst(plan.line_list.λ, λsle_cur/shift_factor)
-    while m <= length(plan.line_list.λ) && λ_min(plan.mask_shape,plan.line_list.λ[m]) * shift_factor < λsle_cur   # only includemask entry if it fit entirely in chunk
+    while m <= num_lines_in_mask && λ_min(plan.mask_shape,plan.line_list.λ[m]) * shift_factor < λsle_cur   # only includemask entry if it fit entirely in chunk
         m += 1
     end
-    if m > length(plan.line_list.λ)   # Return early if no lines fall within chunk's lambda's
+    if m > num_lines_in_mask   # Return early if no lines fall within chunk's lambda's
         return projection
     else
         #println("# Starting with mask entry at λ=", plan.line_list.λ[m], " for chunk with λ= ",first(λs)," - ",last(λs))
@@ -348,7 +348,7 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
                     one_over_delta_z_pixel = 0.5*(λsre_cur + λsle_cur) / (λsre_cur - λsle_cur)
                     projection[p,1] += one_over_delta_z_pixel * mask_weight
                     m += 1
-                    if m<=length(plan.line_list)      # Move to next line
+                    if m<=num_lines_in_mask      # Move to next line
                         mask_mid = plan.line_list.λ[m] * shift_factor
                         mask_lo = λ_min(plan.mask_shape,plan.line_list.λ[m]) * shift_factor
                         mask_hi = λ_max(plan.mask_shape,plan.line_list.λ[m]) * shift_factor
@@ -381,7 +381,7 @@ function project_mask!(projection::A2, λs::A1, plan::PlanT ; shift_factor::Real
                 projection[p,1] += frac_of_psf_in_v_pixel * one_over_delta_z_pixel * mask_weight
                 on_mask = false                 # Indicate that we're done with this line
                 m += 1                          # Move to next line
-                if m<=length(plan.line_list)
+                if m<=num_lines_in_mask
                     mask_mid = plan.line_list.λ[m] * shift_factor
                     mask_lo = λ_min(plan.mask_shape,plan.line_list.λ[m]) * shift_factor
                     mask_hi = λ_max(plan.mask_shape,plan.line_list.λ[m]) * shift_factor
