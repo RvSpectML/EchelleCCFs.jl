@@ -16,7 +16,7 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccfs_chunklist!(chunk_ccfs_out::AbstractArray{T1,2}, chunk_list::AbstractChunkList,
-    plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan(); assume_sorted::Bool = false  ) where {
+    plan_for_chunk::AbstractVector{PlanT} = fill(BasicCCFPlan(),length(chunk_list)); assume_sorted::Bool = false  ) where {
                         T1<:Real, PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
     @assert length(plan_for_chunk) == num_chunks
@@ -45,7 +45,7 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccfs_chunklist(chunk_list::AbstractChunkList,
-                plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan();
+                plan_for_chunk::AbstractVector{PlanT} = fill(BasicCCFPlan(),length(chunk_list));
                 Δfwhm::Real = 0, assume_sorted::Bool = false ) where {
                         PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
@@ -78,7 +78,7 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccf_and_vars_chunklist!(chunk_ccfs_out::AbstractArray{T1,2}, chunk_ccf_vars_out::AbstractArray{T1,2}, chunk_list::AbstractChunkList,
-    plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan(); assume_sorted::Bool = false ) where {
+    plan_for_chunk::AbstractVector{PlanT} =fill(BasicCCFPlan(),length(chunk_list)); assume_sorted::Bool = false ) where {
                         T1<:Real, PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
     @assert length(plan_for_chunk) == num_chunks
@@ -106,7 +106,7 @@ CCF is evaluated using line list and mask_shape provided by the ccf plan for eac
 A 2-d array containing the CCF at each (velocity, chunk)
 """
 function calc_order_ccf_and_vars_chunklist(chunk_list::AbstractChunkList,
-            plan_for_chunk::AbstractVector{PlanT} = BasicCCFPlan();
+            plan_for_chunk::AbstractVector{PlanT} = fill(BasicCCFPlan(),length(chunk_list));
             Δfwhm::Real = 0, assume_sorted::Bool = false ) where {
                         PlanT<:AbstractCCFPlan }
     num_chunks = length(chunk_list)
