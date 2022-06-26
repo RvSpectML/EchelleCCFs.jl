@@ -70,15 +70,11 @@ function calc_ccf_sample_covar_helper!( covar_out::A2, ccfs::A2, weights::A1; te
             end # i
         end # j
     end # k
-    if all(weights.==one(eltype(weights)))
-        normalization = 1.0 / (num_vels-1)
-    else
-        sum_w = sum(weights)
-        sum_w2 = sum(weights.^2)
-        n_eff = sum_w^2/sum_w2
-        normalization = 1.0 / (1.0 - sum_w2 )
-        normalization *= n_eff/(n_eff-1)
-    end
+    sum_w = sum(weights)
+    sum_w2 = sum(weights.^2)
+    n_eff = sum_w^2/sum_w2
+    normalization = 1.0 / (1.0 - sum_w2 )
+    normalization *= n_eff/(n_eff-1)
     covar_out *= normalization
     return covar_out
 end
