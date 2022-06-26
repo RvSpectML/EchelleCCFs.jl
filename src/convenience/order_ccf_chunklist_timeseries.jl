@@ -26,12 +26,12 @@ function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
   nvs = calc_length_ccf_v_grid(plan)
-  norders = length(clt.chunk_list[1].data)
+  norders = num_chunks(clt) # length(clt.chunk_list[1].data)
   nobs =  length(clt.chunk_list)
   order_ccfs = zeros(nvs, norders, nobs)
   num_lines = length(plan.line_list.λ)
-  plan_for_chunk = Vector{BasicCCFPlan}(undef,num_chunks(clt))
-  for chid in 1:num_chunks(clt)
+  plan_for_chunk = Vector{BasicCCFPlan}(undef,norders)
+  for chid in 1:norders
       order = clt[1].order[chid]
       if typeof(plan.line_list) <: BasicLineList2D
           start_order_idx = searchsortedfirst(plan.line_list.order,order)
@@ -123,13 +123,13 @@ function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimes
   #@assert issorted( plan.line_list.λ )
   #nvs = length(calc_ccf_v_grid(plan))
   nvs = calc_length_ccf_v_grid(plan)
-  norders = length(clt.chunk_list[1].data)
+  norders = num_chunks(clt) # length(clt.chunk_list[1].data)
   nobs =  length(clt.chunk_list)
   order_ccfs = zeros(nvs, norders, nobs)
   order_ccf_vars = zeros(nvs, norders, nobs)
   num_lines = length(plan.line_list.λ)
-  plan_for_chunk = Vector{BasicCCFPlan}(undef,num_chunks(clt))
-  for chid in 1:num_chunks(clt)
+  plan_for_chunk = Vector{BasicCCFPlan}(undef,norders)
+  for chid in 1:norders
       order = clt[1].order[chid]
       if typeof(plan.line_list) <: BasicLineList2D
           start_order_idx = searchsortedfirst(plan.line_list.order,order)
@@ -192,7 +192,7 @@ function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimes
   #end
   Threads.@threads for i in 1:nobs
       this_Δfwhm = length(Δfwhm) == nobs ? Δfwhm[i] : 0.0
-      for j in 1:num_chunks(clt)
+      for j in 1:norders
           ( ccf_tmp, ccf_var_tmp ) = calc_ccf_and_var_chunk(clt.chunk_list[i][j], plan_for_chunk[j],
                                             ccf_var_scale=ccf_var_scale, Δfwhm=this_Δfwhm, assume_sorted=true )
           order_ccfs[:,j,i] .= ccf_tmp
