@@ -4,7 +4,7 @@ Author: Eric Ford
 Created: August 2020
 """
 
-"""  `calc_ccf_chunk!( cccf_out, chunk, ccf_plan )`
+"""  `calc_ccf_chunk!( ccf_out, chunk, ccf_plan )`
 Convenience function to compute CCF for one chunk of spectrum, evaluated using mask_shape and line list from ccf plan
 
 # Inputs:

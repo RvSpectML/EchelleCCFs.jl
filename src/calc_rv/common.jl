@@ -11,7 +11,7 @@ default_frac_of_width_to_fit = 0.5
 default_init_guess_ccf_σ = 2000.0   # m/s
 
 # Abstract types
-""" Abstract type for functors to estimate the raidal velocitiy from a CCF and its velocity grid.  """
+""" Abstract type for functors to estimate the radial velocity from a CCF and its velocity grid.  """
 abstract type AbstractMeasureRvFromCCF end
 
 """

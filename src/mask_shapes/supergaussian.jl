@@ -7,10 +7,10 @@ Created: September 2020
 using QuadGK
 
 """   SuperGaussianCCFMask
-A truncated Gaussian mask with two parameters, it's stdandard deviation and where to truncate it, both as a velocity in m/s.
+A truncated Gaussian mask with two parameters, its standard deviation and where to truncate it, both as a velocity in m/s.
 Mask weights are stored separately in a line list.
 
-TODO: Repalce Gaussian with super-Gaussian
+TODO: Replace Gaussian with super-Gaussian
 Warning:  Not implemented/tested yet.
 """
 struct SuperGaussianCCFMask <: AbstractCCFMaskShape

@@ -13,7 +13,7 @@ and one parameter for the velocity width at which the whole thing is truncated.
 Mask weights are stored separately in a line list.
 TODO: Test before using
 """
-struct GaussianMixtureMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
+struct GaussianMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
     weight::SVector{NMix,Float64}
     σ_sqrt2::SVector{NMix,Float64}
     v_offset::SVector{NMix,Float64}
@@ -24,7 +24,7 @@ struct GaussianMixtureMixtureCCFMask{NMix::Integer} <: AbstractCCFMaskShape
 
     """ GaussianMixtureCCFMask( σ ; half_truncation_width_in_σ=2 ) """
     function GaussianMixtureCCFMask(weight::AbstractVector{Float64}, σ::AbstractVector{Float64}, truncation_Δv::Real; v_offset::AbstractVector{Float64}=zeros(length(weight)) )
-        n = legnth(weight)
+        n = length(weight)
         @assert 1 <= n <= 10   # Arbitrary upper limit
         @assert length(σ) == n
         @assert length(v_offset) == n
@@ -67,7 +67,7 @@ end
 function integrate(m::GaussianMixtureCCFMask, v_lo::Real,v_hi::Real)
     @assert -m.truncation_Δv <= v_lo < v_hi <= m.truncation_Δv
     #quadgk(m, v_lo, v_hi)[1]
-    mapreduce(i->cdf(m,v_lo,v_hi,i),+,1:length(m.weights))
+    mapreduce(i->cdf(m,v_lo,v_hi,i),+,1:length(m.weight))
 end
 
 """ Functor for returning PSF for Δv <= half_width.  """
@@ -75,7 +75,7 @@ function (m::GaussianMixtureCCFMask)(Δv::Real)
     if abs2(Δv) > abs2(m.truncation_Δv)
         return zero(Δv)
     else
-        return mapreduce(i->pdf(m,Δv,i),+,1:length(m.weights))
+        return mapreduce(i->pdf(m,Δv,i),+,1:length(m.weight))
     end
 end
 
