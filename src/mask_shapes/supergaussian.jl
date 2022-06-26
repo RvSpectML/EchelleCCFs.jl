@@ -64,5 +64,5 @@ function mask_with_increased_fwhm(m::SuperGaussianCCFMask, Δfwhm::Real )
     fwhm_orig = σ * sqrt(8 * log(2)^(1/m.power))
     fwhm_new = sqrt(fwhm_orig^2 + Δfwhm^2)
     σ_new = fwhm_new/sqrt(8 * log(2)^(1/m.power))
-    return SuperGaussianCCFMask(σ_new, m.power, m.half_width_truncation * (σ_new * sqrt(2) / σ_sqrt2) )
+    return SuperGaussianCCFMask(σ_new, m.power, m.half_width_truncation * (σ_new /σ) )
 end
