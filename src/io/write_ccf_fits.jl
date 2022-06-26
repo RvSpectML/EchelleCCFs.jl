@@ -140,9 +140,7 @@ function write_each_ccf_fits(metadata::AbstractArray{Dict{Symbol,Any},1}, v_grid
     for i in 1:num_files
         fits_fn = last(splitpath(metadata[i][:Filename]))
         ccf_fn = replace(fits_fn, ".fits" => "_ccf.fits")
-        if isnothing(total_vel) || isnothing(sigma_total_vel)
-            fits_hdr = make_ccf_fits_header(metadata[i], line_list_filename=line_list_filename)
-        else
+        if !(isnothing(total_vel) || isnothing(sigma_total_vel))
             fits_hdr = make_ccf_fits_header(metadata[i],v=total_vel[i],e_v=sigma_total_vel[i], line_list_filename=line_list_filename)
         end
         if isnothing(order_vels) || isnothing(sigma_order_vels)
