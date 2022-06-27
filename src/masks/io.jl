@@ -42,8 +42,11 @@ end
 """
 function read_linelist_rvspectml(fn::String)
     local df = CSV.read(fn,DataFrame,threaded=false)
-    @assert hasproperty(df, :lambda)
+    @assert hasproperty(df, :lambda) || hasproperty(df, :wavelength)
     @assert hasproperty(df, :weight) || hasproperty(df, :depth) 
+    if !hasproperty(df, :lambda) && hasproperty(df, :wavelength)
+      rename!(df,:wavelength => :lambda)
+    end
     if hasproperty(df, :depth) && !hasproperty(df, :weight)
         df[!,:weight] = df[!,:depth] # TODO: Decide out what we want to do about tracking depths and weights sepoarately
     end

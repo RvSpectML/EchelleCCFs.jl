@@ -74,7 +74,7 @@ function (mrv::MeasureRvFromCCFTemplate)(vels::A1, ccf::A2, ccf_var::A3 = ones(l
 		# Minus sign due to weird convention of defining CCF to look like an absorption line (e.g., 1 at Inf minimum at best fit velocity)
 		rv = -sum( (view(ccf,mrv.v_idx_to_fit) .- view(mrv.template,mrv.v_idx_to_fit) ) .* deriv ./ var)
         # Warning: Uncertaintiy ignores correlations between pixels, particularly problematic when oversample pixels
-		denom = sum( abs2.(deriv) ./ var )
+		denom = sum( abs2.(deriv) ./ abs.(var) )
 		rv *= (1/denom)
 		σ_rv =  sqrt(1/denom)
 		return (rv=rv, σ_rv=σ_rv)

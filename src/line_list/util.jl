@@ -80,7 +80,8 @@ function calc_snr_weights_for_lines!(line_list::DataFrame, spectra::AAS ; v_cent
       @assert 1 <= idx_min <= num_cols
       @assert 1 <= idx_max <= num_cols
       #println("# Line ", i, " at ", line.lambda, " obs ", obs_idx, " idx = ", idx_min, " - ", idx_max)
-      snr_list[obs_idx,i] = RvSpectMLBase.calc_snr( spectra[obs_idx], idx_min:idx_max, order )
+      snr = RvSpectMLBase.calc_snr( spectra[obs_idx], idx_min:idx_max, order )
+      snr_list[obs_idx,i] = isnan(snr) ? 0.0 : snr
       #(depth[obs_idx,i], exp_sigma_rv[obs_idx,i]) = calc_depth_and_expected_rv_precission( spectra[obs_idx], idx_min:idx_max, order )
     end
   end

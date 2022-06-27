@@ -51,7 +51,7 @@ function (mrv::MeasureRvFromCCFQuadratic)(vels::A1, ccf::A2, ccf_var::A3 ) where
     X = ones(length(inds),3)
     X[:,2] .= view(vels,inds) .-mean_v
     X[:,3] .= (view(vels,inds) .-mean_v).^2
-    covar = PDiagMat(view(ccf_var,inds))
+    covar = PDiagMat(abs.(view(ccf_var,inds)))
     denom = (X' * (covar \ X) )
     (c, b, a)  = denom \ (X' * (covar \ view(ccf,inds)) )
     covar_beta = inv(denom)

@@ -83,7 +83,7 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_var::A3 ) where 
         p0 = [μ, σ, amp, y0]
 
         # fit and return the mean of the distribution
-        result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), 1.0 ./ view(ccf_var,inds),  p0)
+        result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), abs.(1.0 ./ view(ccf_var,inds)),  p0)
 
         if result.converged
            rv = coef(result)[1]
