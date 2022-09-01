@@ -29,7 +29,7 @@ ThreadedIterables = "11d239b0-c0b9-11e8-1935-d5cfa53abb03"
 [compat]
 CSV = "0.7, 0.8, 0.9.10, 0.9.11, 0.10"
 DataFrames = "0.20, 0.21, 0.22, 1.0, 1.1"
-FITSIO = "0.16"
+FITSIO = "0.16, 0.17"
 ForwardDiff = "0.10"
 LsqFit = "0.11, 0.12"
 NaNMath = "0.3, 1"
