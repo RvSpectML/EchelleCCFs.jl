@@ -95,7 +95,17 @@ function calc_order_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
     #  order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan)
   #end
   Threads.@threads for i in 1:nobs
+      if verbose 
+         @info "Computing CCF: " i nobs (tid=Threads.threadid())
+      end 
       this_Δfwhm = length(Δfwhm) == nobs ? Δfwhm[i] : 0.0
+          max_nan_frac_to_use = 0.75
+          nan_frac_lambda = sum(isnan.(clt.chunk_list[i].data[j].λ)) / length(clt.chunk_list[i].data[j].λ)
+          nan_frac_flux =   sum(isnan.(clt.chunk_list[i].data[j].flux)) / length(clt.chunk_list[i].data[j].flux)
+          nan_frac_var =    sum(isnan.(clt.chunk_list[i].data[j].var)) / length(clt.chunk_list[i].data[j].var)
+          if (nan_frac_lambda > max_nan_frac_to_use) || (nan_frac_flux > max_nan_frac_to_use) || (nan_frac_var > max_nan_frac_to_use)  
+             continue
+          end 
       order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan_for_chunk, Δfwhm=this_Δfwhm, assume_sorted=true )
   end
 
@@ -191,8 +201,18 @@ function calc_order_ccf_and_var_chunklist_timeseries(clt::AbstractChunkListTimes
     #  order_ccfs[:,:,i] .= calc_order_ccfs_chunklist(clt.chunk_list[i], plan)
   #end
   Threads.@threads for i in 1:nobs
+      if verbose 
+         @info "Computing CCF: " i nobs (tid=Threads.threadid())
+      end
       this_Δfwhm = length(Δfwhm) == nobs ? Δfwhm[i] : 0.0
+      max_nan_frac_to_use = 0.75
       for j in 1:norders
+          nan_frac_lambda = sum(isnan.(clt.chunk_list[i].data[j].λ)) / length(clt.chunk_list[i].data[j].λ)
+          nan_frac_flux =   sum(isnan.(clt.chunk_list[i].data[j].flux)) / length(clt.chunk_list[i].data[j].flux)
+          nan_frac_var =    sum(isnan.(clt.chunk_list[i].data[j].var)) / length(clt.chunk_list[i].data[j].var)
+          if (nan_frac_lambda > max_nan_frac_to_use) || (nan_frac_flux > max_nan_frac_to_use) || (nan_frac_var > max_nan_frac_to_use)  
+             continue
+          end 
           ( ccf_tmp, ccf_var_tmp ) = calc_ccf_and_var_chunk(clt.chunk_list[i][j], plan_for_chunk[j],
                                             ccf_var_scale=ccf_var_scale, Δfwhm=this_Δfwhm, assume_sorted=true )
           order_ccfs[:,j,i] .= ccf_tmp
