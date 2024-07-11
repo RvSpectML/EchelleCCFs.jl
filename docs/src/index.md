@@ -9,6 +9,11 @@ Pages = [ "index.md", "calc_ccf.md", "calc_rv.md"  ]
 Depth = 3
 ```
 
+```@autodocs
+Modules = [EchelleCCFs]
+Private = false
+Order = [:module]
+```
 
 ## Related Documentation
 - [RvSpectMLBase](https://rvspectml.github.io/RvSpectMLBase.jl/stable/)

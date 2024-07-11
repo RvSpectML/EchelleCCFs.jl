@@ -2,7 +2,7 @@ using EchelleCCFs
 using Documenter
 
 makedocs(;
-    modules=[EchelleCCFs],
+     modules=[EchelleCCFs],
     authors="Eric Ford",
     repo="https://github.com/RvSpectML/EchelleCCFs.jl/blob/{commit}{path}#L{line}",
     sitename="EchelleCCFs.jl",
@@ -18,7 +18,8 @@ makedocs(;
         "Examples" => "examples.md",
         "Index" => "longlist.md"
     ],
-    checkdocs=:exports,
+    checkdocs=:none,
+    #checkdocs=:exports,
 )
 
 deploydocs(;

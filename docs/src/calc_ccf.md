@@ -10,7 +10,6 @@ Pages = [ "calc_ccf.md" ]
 Depth = 3
 ```
 
-
 ## Calculate CCFs
 
 ### Functions
@@ -19,15 +18,12 @@ Modules = [EchelleCCFs]
 Private = false
 Order = [:function]
 ```
+
 ### Types
 ```@autodocs
 Modules = [EchelleCCFs]
 Private = false
 Order = [:type]
-```
-
-## Internals
-```@docs RVFromCCF
 ```
 
 ```@autodocs
