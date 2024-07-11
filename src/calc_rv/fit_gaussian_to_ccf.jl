@@ -41,10 +41,10 @@ end
 @. gaussian_line_helper(x, p) = p[4] + p[3] * exp(-0.5*((x-p[1])/p[2])^2)
 
 function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1} }
+        if all(ccf .== zero(eltype(ccf))) return (rv=NaN, σ_rv=NaN)     end
         # find the min and fit only the part near the minimum of the CCF
         amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
         if isnan(amin)  return (rv=NaN, σ_rv=NaN)     end
-
         # make initial guess parameters
         μ = vels[amin]
         σ = mrv.init_guess_ccf_σ                          # TODO: Make sure this is robust.
@@ -53,14 +53,20 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2 ) where {T1<:Real, A1
         y0 = maxccf
         p0 = [μ, σ, amp, y0]
 
+        local rvfit
+        try
         # fit and return the mean of the distribution
         result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), p0)
-
         if result.converged
            rv = coef(result)[1]
            sigma_rv = stderror(result)[1]
            rvfit = (rv=rv, σ_rv=sigma_rv)
         else
+           @warn "Fit of Gaussian to CCF did not converge.  Reverting to fit quadratic to CCF."
+           quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
+           rvfit = quad_fit_to_ccf(vels,ccf)
+        end
+        catch
            @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
            quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
            rvfit = quad_fit_to_ccf(vels,ccf)
@@ -70,6 +76,7 @@ end
 
 
 function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_var::A3 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,1} }
+        if all(ccf .== zero(eltype(ccf))) return (rv=NaN, σ_rv=NaN)     end
         # find the min and fit only the part near the minimum of the CCF
         amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
         if isnan(amin)  return (rv=NaN, σ_rv=NaN)     end
@@ -82,14 +89,22 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_var::A3 ) where 
         y0 = maxccf
         p0 = [μ, σ, amp, y0]
 
-        # fit and return the mean of the distribution
-        result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), abs.(1.0 ./ view(ccf_var,inds)),  p0)
+        local rvfit
+        try
+	   # fit and return the mean of the distribution
+           result = curve_fit(gaussian_line_helper, view(vels,inds), view(ccf,inds), abs.(1.0 ./ view(ccf_var,inds)),  p0)
 
-        if result.converged
-           rv = coef(result)[1]
-           sigma_rv = stderror(result)[1]
-           rvfit = (rv=rv, σ_rv=sigma_rv)
-        else
+           if result.converged
+              rv = coef(result)[1]
+              sigma_rv = stderror(result)[1]
+              rvfit = (rv=rv, σ_rv=sigma_rv)
+           else
+              @warn "Fit of Gaussian to CCF did not converge.  Reverting to fit quadratic to CCF."
+              # println("# Tried fitting between ", extrema(view(vels,inds)), " over which CCF varied within ", extrema(view(ccf,inds)) )
+              quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
+              rvfit = quad_fit_to_ccf(vels,ccf,ccf_var)
+           end
+        catch
            @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
            # println("# Tried fitting between ", extrema(view(vels,inds)), " over which CCF varied within ", extrema(view(ccf,inds)) )
            quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
@@ -103,6 +118,7 @@ using Optim
 using ForwardDiff
 
 function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_covar::A3 ) where {T1<:Real, A1<:AbstractArray{T1,1}, T2<:Real, A2<:AbstractArray{T2,1}, T3<:Real, A3<:AbstractArray{T3,2} }
+        if all(ccf .== zero(eltype(ccf))) return (rv=NaN, σ_rv=NaN)     end
         # find the min and fit only the part near the minimum of the CCF
         amin, inds = find_idx_at_and_around_minimum(vels, ccf, frac_of_width_to_fit=mrv.frac_of_width_to_fit, measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
         if isnan(amin)  return (rv=NaN, σ_rv=NaN)     end
@@ -134,19 +150,27 @@ function (mrv::MeasureRvFromCCFGaussian)(vels::A1, ccf::A2, ccf_covar::A3 ) wher
         end
         =#
 
+        local rvfit
+        try 
         vels_float64 = convert.(Float64,view(vels,inds))
         pd_ccf_covar = PDMat( Symmetric(view(ccf_covar,inds,inds) ) )
         #optim_helper = TwiceDifferentiable(p-> invquad(pd_ccf_covar ,  ( gaussian_line_helper(vels_float64, p) - view(ccf,inds)  ) ), p0, autodiff=:forward)
         optim_helper(p) = invquad(pd_ccf_covar ,  ( gaussian_line_helper(vels_float64, p) - view(ccf,inds)  ) )
-        result = Optim.optimize(optim_helper, p0, ConjugateGradient() )
-        if Optim.converged(result)
+           result = Optim.optimize(optim_helper, p0, ConjugateGradient() )
+           if Optim.converged(result)
                 fit_param = Optim.minimizer(result)
                 rv = fit_param[1]
                 numerical_hessian = ForwardDiff.hessian(optim_helper,fit_param)
                 var_cov_matrix = inv(numerical_hessian)
                 sigma_rv = diag(var_cov_matrix)[1]
                 rvfit = (rv=rv, σ_rv=sigma_rv, covar_rv=var_cov_matrix )
-        else
+           else
+                @warn "Fit of Gaussian to CCF did not converge.  Reverting to fit quadratic to CCF."
+                println("# Tried fitting between ", extrema(view(vels,inds)), " over which CCF varied within ", extrema(view(ccf,inds)) )
+                quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
+                rvfit = quad_fit_to_ccf(vels,ccf,diag(ccf_covar))
+           end
+        catch
                 @warn "Fit of Gaussian to CCF Failed.  Reverting to fit quadratic to CCF."
                 println("# Tried fitting between ", extrema(view(vels,inds)), " over which CCF varied within ", extrema(view(ccf,inds)) )
                 quad_fit_to_ccf = MeasureRvFromCCFQuadratic(frac_of_width_to_fit=mrv.frac_of_width_to_fit,measure_width_at_frac_depth=mrv.measure_width_at_frac_depth)
