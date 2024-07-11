@@ -6,9 +6,7 @@ Based on code by Alex Wise (aw@psu.edu)
 Refactored and optimized by Eric Ford
 """
 
-"""
-Module for estimating the radial velocity based on the CCF
-"""
+# """ Module for estimating the radial velocity based on the CCF """
 module RVFromCCF
 
 import Statistics: mean

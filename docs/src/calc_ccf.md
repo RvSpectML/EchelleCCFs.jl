@@ -27,6 +27,9 @@ Order = [:type]
 ```
 
 ## Internals
+```@docs RVFromCCF
+```
+
 ```@autodocs
 Modules = [EchelleCCFs]
 Public = false

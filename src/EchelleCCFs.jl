@@ -7,7 +7,7 @@ Based on code by Alex Wise (aw@psu.edu)
 Refactored, optimized and generalized by Eric Ford
 """
 
-""" Module for computing CCFs """
+# """ Module for computing CCFs """
 module EchelleCCFs
 
 import RvSpectMLBase
