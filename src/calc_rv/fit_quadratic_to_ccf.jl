@@ -23,7 +23,7 @@ Optional Arguments:
 function MeasureRvFromCCFQuadratic(; frac_of_width_to_fit::Real = default_frac_of_width_to_fit,
                                     measure_width_at_frac_depth::Real = default_measure_width_at_frac_depth )
     @assert 0.25 <= measure_width_at_frac_depth <= 0.75
-    @assert 0.1 <= frac_of_width_to_fit <= 2.0
+    @assert 0.1 <= frac_of_width_to_fit <= 5.0
     MeasureRvFromCCFQuadratic(frac_of_width_to_fit,measure_width_at_frac_depth)
 end
 
