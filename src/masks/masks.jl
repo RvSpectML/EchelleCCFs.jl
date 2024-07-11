@@ -9,7 +9,7 @@ using DataFrames, CSV
 
 abstract type AbstractCalcChunkWidth end
 
-""" Functor to return a constant scale factor for chunk widths (regardless of wavelength passed)"""
+# """ Functor to return a constant scale factor for chunk widths (regardless of wavelength passed)"""
 struct ChunkWidthFixedΔlnλ <: AbstractCalcChunkWidth
    Δlnλ::Float64
 end

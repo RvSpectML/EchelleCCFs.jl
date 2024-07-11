@@ -18,6 +18,7 @@ makedocs(;
         "Examples" => "examples.md",
         "Index" => "longlist.md"
     ],
+    checkdocs=:exports,
 )
 
 deploydocs(;

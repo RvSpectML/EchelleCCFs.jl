@@ -33,7 +33,8 @@ function EmptyBasicLineList()
 end
 
 
-""" A basic line list for passing to compute CCFs.
+""" `BasicLineList2D( λ, weight, order )` 
+A basic line list for passing to compute CCFs.
 Contains (views into) arrays specifying the minimum and maximum wavelength range and weight for each line. """
 struct BasicLineList2D{T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:AbstractArray{T2,1} } <: AbstractLineList
     λ::AA1
@@ -41,7 +42,6 @@ struct BasicLineList2D{T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:Ab
     order::AA2
 end
 
-""" `BasicLineList( λ, weight )` """
 function BasicLineList2D{T1,T2}(λ::AA1, w::AA1, o::AA2) where {T1<:Real, AA1<:AbstractArray{T1,1}, T2<:Integer,  AA2<:AbstractArray{T2,1} }
     @assert length(λ) == length(w) == length(o)
     @assert length(λ) >= 1
