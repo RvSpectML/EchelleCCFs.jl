@@ -12,7 +12,8 @@ convert_air_to_vacuum determines whether to convert to vacuum wavelengths.
 Warning: ESPRESSO masks don't provide line depth and sometimes include one entry for a blend of lines.
 """
 function read_linelist_espresso(fn::String; convert_air_to_vacuum::Bool = true)
-    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","weight"],delim=' ',ignorerepeated=true)
+    local df = CSV.read(fn,DataFrame,ntasks=1,header=["lambda","weight"],delim=' ',ignorerepeated=true)
+    #local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","weight"],delim=' ',ignorerepeated=true)
     #local df = CSV.read(fn,DataFrame,threaded=false,delim=' ',ignorerepeated=true)
     @assert hasproperty(df, :lambda)
     @assert hasproperty(df, :weight)
@@ -29,7 +30,8 @@ end
 """
 function read_linelist_vald(fn::String; convert_air_to_vacuum::Bool = true)
     #local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
-    local df = CSV.read(fn,DataFrame,threaded=false)
+    #local df = CSV.read(fn,DataFrame,threaded=false)
+    local df = CSV.read(fn,DataFrame,ntasks=1)
     @assert hasproperty(df, :lambda)
     @assert hasproperty(df, :depth)
     select!(df,["lambda","depth"])
@@ -46,7 +48,7 @@ end
 """
 function read_linelist_rvspectml(fn::String)
     #local df = CSV.read(fn,DataFrame,threaded=false)
-    local df = CSV.read(fn,DataFrame,threaded=false)
+    local df = CSV.read(fn,DataFrame,ntasks=1)
     @assert hasproperty(df, :lambda) || hasproperty(df, :wavelength)
     @assert hasproperty(df, :weight) || hasproperty(df, :depth) 
     if !hasproperty(df, :lambda) && hasproperty(df, :wavelength)

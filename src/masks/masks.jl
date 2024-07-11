@@ -42,7 +42,8 @@ ESPRESSO format: `lambda` and `weight`.
 Warning: ESPRESSO masks don't provide line depth and sometimes include one entry for a blend of lines.
 """
 function read_mask_espresso(fn::String; calcΔ::CCWT = default_calc_chunk_width) where { CCWT<:AbstractCalcChunkWidth }
-    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","weight"],delim=' ',ignorerepeated=true)
+    #local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","weight"],delim=' ',ignorerepeated=true)
+    local df = CSV.read(fn,DataFrame,ntasks=1,header=["lambda","weight"],delim=' ',ignorerepeated=true)
     df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
     local Δ = calcΔ.(df[!,:lambda])
     @assert all(Δ.>0)
@@ -56,7 +57,8 @@ end
    VALD format: `lambda_lo`, `lambdaa_hi` and `depth`.
 """
 function read_mask_vald(fn::String; calcΔ::CCWT = default_calc_chunk_width) where { CCWT<:AbstractCalcChunkWidth }
-    local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
+    #local df = CSV.read(fn,DataFrame,threaded=false,header=["lambda","depth"])
+    local df = CSV.read(fn,DataFrame,ntasks=1,header=["lambda","depth"])
     df[!,:lambda] .= λ_air_to_vac.(df[!,:lambda])
     local Δ = calcΔ.(df[!,:lambda])
     @assert all(Δ.>0)
