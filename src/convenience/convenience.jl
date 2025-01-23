@@ -15,7 +15,7 @@ include("ccf_chunk.jl")
 
 include("ccf_chunklist.jl")
 
-using ThreadedIterables
+import ThreadsX
 include("ccf_chunklist_timeseries.jl")
 
 include("order_ccf_chunklist.jl")

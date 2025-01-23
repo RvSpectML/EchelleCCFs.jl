@@ -96,9 +96,9 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
   end
   if calc_ccf_covar
        if length(Δfwhm) == length(clt)
-          list_of_ccf_and_covar = @threaded  map(obsid->calc_ccf_and_covar_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, Δfwhm=Δfwhm[obsid], assume_sorted=true ), 1:length(clt) )
+          list_of_ccf_and_covar = ThreadsX.map(obsid->calc_ccf_and_covar_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, Δfwhm=Δfwhm[obsid], assume_sorted=true ), 1:length(clt) )
        else
-          list_of_ccf_and_covar = @threaded  map(obsid->calc_ccf_and_covar_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=true ), 1:length(clt) )
+          list_of_ccf_and_covar = ThreadsX.map(obsid->calc_ccf_and_covar_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=true ), 1:length(clt) )
        end
        nvs = length(first(list_of_ccf_and_covar).ccf)
        ccfs_out = zeros(nvs,length(clt))
@@ -110,9 +110,9 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
        return (ccfs=ccfs_out, ccf_covars=ccf_covars_out)
   elseif calc_ccf_var
       if length(Δfwhm) == length(clt)
-          list_of_ccf_and_var = @threaded  map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, Δfwhm=Δfwhm[obsid], assume_sorted=true ), 1:length(clt) )
+          list_of_ccf_and_var = ThreadsX.map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, Δfwhm=Δfwhm[obsid], assume_sorted=true ), 1:length(clt) )
       else
-          list_of_ccf_and_var = @threaded  map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=true ), 1:length(clt) )
+          list_of_ccf_and_var = ThreadsX.map(obsid->calc_ccf_and_var_chunklist(clt.chunk_list[obsid], plan_for_chunk, ccf_var_scale=ccf_var_scale, assume_sorted=true ), 1:length(clt) )
       end
        nvs = length(first(list_of_ccf_and_var).ccf)
        ccfs_out = zeros(nvs,length(clt))
@@ -124,9 +124,9 @@ function calc_ccf_chunklist_timeseries(clt::AbstractChunkListTimeseries,
        return (ccfs=ccfs_out, ccf_vars=ccf_vars_out)
   else
       if length(Δfwhm) == length(clt)
-         return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk, Δfwhm=Δfwhm[obsid], assume_sorted=true ),hcat, 1:length(clt) )
+         returnThreadsX.mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk, Δfwhm=Δfwhm[obsid], assume_sorted=true ),hcat, 1:length(clt) )
      else
-         return @threaded mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk, assume_sorted=true ),hcat, 1:length(clt) )
+         returnThreadsX.mapreduce(obsid->calc_ccf_chunklist(clt.chunk_list[obsid], plan_for_chunk, assume_sorted=true ),hcat, 1:length(clt) )
      end
   end
 end
