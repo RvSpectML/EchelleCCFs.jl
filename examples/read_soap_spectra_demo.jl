@@ -12,6 +12,8 @@ function read_soap_demo(filename::String)
     end
     return (λ=λ, flux = flux)
 end
-
 filename = joinpath(pkgdir(EchelleCCFs),"data","spectra","soap_demo.h5")
+if !isfile(filename)
+    include(joinpath(pkgdir(EchelleCCFs), "deps", "build.jl")
+end
 (λ, flux) = read_soap_demo(filename)
